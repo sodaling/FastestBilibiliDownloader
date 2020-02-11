@@ -1,11 +1,17 @@
 package engine
 
-import "simple-golang-crawler/fetcher"
+import (
+	"simple-golang-crawler/fetcher"
+)
 
 type ConcurrentEngine struct {
 	WorkerCount int
 	Scheduler   Scheduler
 	ItemChan    chan Item
+}
+
+func NewConcurrentEngine(workerCount int, scheduler Scheduler, itemChan chan Item) *ConcurrentEngine {
+	return &ConcurrentEngine{WorkerCount: workerCount, Scheduler: scheduler, ItemChan: itemChan}
 }
 
 type Scheduler interface {
@@ -51,7 +57,7 @@ func (c *ConcurrentEngine) Run(seed ...Request) {
 
 }
 
-var urlVisited map[string]struct{}
+var urlVisited = make(map[string]struct{})
 
 func hasVisited(url string) bool {
 	if _, ok := urlVisited[url]; ok {

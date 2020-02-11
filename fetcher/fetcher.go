@@ -37,7 +37,7 @@ func Fetch(url string) ([]byte, error) {
 
 	e := determineEncoding(bodyReader)
 	utf8Reader := transform.NewReader(bodyReader, e.NewDecoder())
-	defer resp.Body.Close() //注意放置的位置,否则可能出现invalid memory
+	defer resp.Body.Close()
 	return ioutil.ReadAll(utf8Reader)
 }
 

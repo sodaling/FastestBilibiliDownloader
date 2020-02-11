@@ -7,6 +7,10 @@ type ConcurrentScheduler struct {
 	WorkerChan   chan chan engine.Request
 }
 
+func NewConcurrentScheduler() *ConcurrentScheduler {
+	return &ConcurrentScheduler{}
+}
+
 func (s *ConcurrentScheduler) Run() {
 	s.WorkerChan = make(chan chan engine.Request)
 	s.RequestsChan = make(chan engine.Request)
