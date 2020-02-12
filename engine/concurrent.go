@@ -34,6 +34,7 @@ func (c *ConcurrentEngine) Run(seed ...Request) {
 	}
 
 	for _, req := range seed {
+		hasVisited(req.Url)
 		c.Scheduler.Submit(req)
 	}
 
@@ -41,9 +42,9 @@ func (c *ConcurrentEngine) Run(seed ...Request) {
 		result := <-resultChan
 
 		for _, item := range result.Items {
-			go func() {
+			go func(item Item) {
 				c.ItemChan <- item
-			}()
+			}(item)
 		}
 
 		for _, req := range result.Requests {
