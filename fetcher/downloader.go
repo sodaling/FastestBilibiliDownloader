@@ -1,14 +1,18 @@
 package fetcher
 
 import (
-	"bufio"
 	"fmt"
-	"golang.org/x/text/transform"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"os"
+	"simple-golang-crawler/model"
 )
 
-func VideoFetcher(referer string) FetchFun {
+var startUrlTem = "https://api.bilibili.com/x/web-interface/view?aid=%d/?p=%d"
+
+func GenVideoFetcher(videoInfo *model.VideoInfo) FetchFun {
+	referer := fmt.Sprintf(startUrlTem, videoInfo.Aid, videoInfo.Page)
+
 	return func(url string) (bytes []byte, err error) {
 		<-rateLimiter
 		client := http.DefaultClient
@@ -32,15 +36,20 @@ func VideoFetcher(referer string) FetchFun {
 			return nil, err
 		}
 
-		if resp.StatusCode != http.StatusOK {
+		if resp.StatusCode != http.StatusPartialContent {
+			fmt.Println(resp.StatusCode)
 			return nil, fmt.Errorf("wrong status code: %d", resp.StatusCode)
 		}
-
-		bodyReader := bufio.NewReader(resp.Body)
-
-		e := determineEncoding(bodyReader)
-		utf8Reader := transform.NewReader(bodyReader, e.NewDecoder())
 		defer resp.Body.Close()
-		return ioutil.ReadAll(utf8Reader)
+		filename := fmt.Sprintf("%d:%d", videoInfo.Aid, videoInfo.Cid)
+		file, err := os.Create(filename)
+		if err != nil {
+			os.Exit(1)
+		}
+		defer file.Close()
+		io.Copy(file, resp.Body)
+		fmt.Println(filename + "has finished")
+
+		return nil, nil
 	}
 }

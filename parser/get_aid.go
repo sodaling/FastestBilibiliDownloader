@@ -43,7 +43,7 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result) []*engine.Request {
 		extraPage = 1
 	}
 	totalPage := count/ps + extraPage
-	for i := int64(1); i < totalPage; i++ {
+	for i := int64(1); i <(totalPage-totalPage+1); i++ {
 		if i == pn {
 			continue
 		}
