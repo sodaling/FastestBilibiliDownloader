@@ -1,7 +1,8 @@
 package model
 
-type Video struct {
-	Aid    int64  `json:"aid"`
-	Title  string `json:"title"`
-	Author string `json:"author"`
+type VideoInfo struct {
+	Aid      int64
+	Cid      int64
+	Page     int64
+	Title    string
 }

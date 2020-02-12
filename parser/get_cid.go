@@ -1,8 +1,13 @@
 package parser
 
 import (
+	"crypto/md5"
 	"fmt"
+	"github.com/tidwall/gjson"
 	"simple-golang-crawler/engine"
+	"simple-golang-crawler/fetcher"
+	"simple-golang-crawler/model"
+	"strconv"
 	"strings"
 )
 
@@ -15,21 +20,22 @@ var quailty = "80"
 func GenGetAidInfoParseFun(aid int64) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 		var retParseResult engine.ParseResult
-		fmt.Println(aid)
-		//data := gjson.GetBytes(contents, "data").Array()
-		//appkey, sec := getAppkey(entropy)
-		//
-		//for _, i := range data {
-		//	var req engine.
-		//	videoInfo := &VideoInfo{}
-		//	videoInfo.Aid = aid
-		//	videoInfo.Cid = i.Get("cid").Int()
-		//	cidStr := strconv.FormatInt(videoInfo.Cid, 10)
-		//
-		//	params := fmt.Sprintf(paramsTemp, appkey, cidStr, quailty, quailty)
-		//	chksum := fmt.Sprintf("%x", md5.Sum([]byte(params+cidStr)))
-		//	urlApi := fmt.Sprintf(playApiTemp, params, chksum)
-		//}
+		data := gjson.GetBytes(contents, "data").Array()
+		appkey, sec := getAppkey(entropy)
+
+		for _, i := range data {
+			videoInfo := &model.VideoInfo{}
+			videoInfo.Aid = aid
+			videoInfo.Cid = i.Get("cid").Int()
+			videoInfo.Page = i.Get("page").Int()
+			cidStr := strconv.FormatInt(videoInfo.Cid, 10)
+
+			params := fmt.Sprintf(paramsTemp, appkey, cidStr, quailty, quailty)
+			chksum := fmt.Sprintf("%x", md5.Sum([]byte(params+sec)))
+			urlApi := fmt.Sprintf(playApiTemp, params, chksum)
+			req := engine.NewRequest(urlApi, GenVideoParseFun(videoInfo), fetcher.DefaultFetcher)
+			retParseResult.Requests = append(retParseResult.Requests, req)
+		}
 
 		return retParseResult
 	}

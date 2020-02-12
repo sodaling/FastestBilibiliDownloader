@@ -26,7 +26,7 @@ func getAidDetailReqList(pageInfo gjson.Result) []*engine.Request {
 		aid := i.Get("aid").Int()
 		reqUrl := fmt.Sprintf(getCidUrl, aid)
 		reqParseFunction := GenGetAidInfoParseFun(aid)
-		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetch)
+		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)
 	}
 	return retRequests
@@ -49,7 +49,7 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result) []*engine.Request {
 		}
 		reqUrl := fmt.Sprintf(getAidUrl, 585267, i)
 		reqParseFunction := UpSpaceParseFun
-		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetch)
+		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)
 	}
 	return retRequests

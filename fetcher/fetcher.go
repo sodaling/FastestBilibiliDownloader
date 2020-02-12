@@ -16,7 +16,7 @@ var rateLimiter = time.Tick(100 * time.Microsecond)
 
 type FetchFun func(url string) ([]byte, error)
 
-func DefaultFetch(url string) ([]byte, error) {
+func DefaultFetcher(url string) ([]byte, error) {
 	<-rateLimiter
 	client := http.DefaultClient
 	request, err := http.NewRequest("GET", url, nil)
