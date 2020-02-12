@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"simple-golang-crawler/engine"
+	"simple-golang-crawler/fetcher"
 	"simple-golang-crawler/parser"
 	"simple-golang-crawler/persist"
 	"simple-golang-crawler/scheduler"
@@ -20,10 +21,8 @@ func main() {
 	queueScheduler := scheduler.NewConcurrentScheduler()
 	conEngine := engine.NewConcurrentEngine(10, queueScheduler, itemChan)
 
-	req := engine.Request{
-		Url:           "https://api.bilibili.com/x/space/arc/search?mid=585267&ps=30&tid=0&pn=2&keyword=&order=pubdate&jsonp=jsonp",
-		ParseFunction: parser.BilibiliParseFun,
-	}
+	req := engine.NewRequest("https://api.bilibili.com/x/space/arc/search?mid=585267&ps=30&tid=0&pn=2&keyword=&order=pubdate&jsonp=jsonp",parser.UpSpaceParseFun,fetcher.DefaultFetch)
+
 
 	conEngine.Run(req)
 

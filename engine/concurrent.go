@@ -1,9 +1,5 @@
 package engine
 
-import (
-	"simple-golang-crawler/fetcher"
-)
-
 type ConcurrentEngine struct {
 	WorkerCount int
 	Scheduler   Scheduler
@@ -16,16 +12,16 @@ func NewConcurrentEngine(workerCount int, scheduler Scheduler, itemChan chan Ite
 
 type Scheduler interface {
 	Run()
-	GetWorkerChan() chan Request
-	Submit(Request)
+	GetWorkerChan() chan *Request
+	Submit(*Request)
 	WorkerReadyNotifier
 }
 
 type WorkerReadyNotifier interface {
-	Ready(chan Request)
+	Ready(chan *Request)
 }
 
-func (c *ConcurrentEngine) Run(seed ...Request) {
+func (c *ConcurrentEngine) Run(seed ...*Request) {
 	resultChan := make(chan ParseResult)
 	c.Scheduler.Run()
 
@@ -70,7 +66,7 @@ func hasVisited(url string) bool {
 
 }
 
-func CreateWorker(out chan ParseResult, in chan Request, notifier WorkerReadyNotifier) {
+func CreateWorker(out chan ParseResult, in chan *Request, notifier WorkerReadyNotifier) {
 	go func() {
 		for {
 			notifier.Ready(in)
@@ -84,8 +80,8 @@ func CreateWorker(out chan ParseResult, in chan Request, notifier WorkerReadyNot
 	}()
 }
 
-func work(request Request) (ParseResult, error) {
-	content, ok := fetcher.Fetch(request.Url)
+func work(request *Request) (ParseResult, error) {
+	content, ok := request.FetchFun(request.Url)
 	if ok != nil {
 		return ParseResult{}, ok
 	}
