@@ -1,18 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"simple-golang-crawler/engine"
-	"simple-golang-crawler/fetcher"
 	"simple-golang-crawler/parser"
 	"simple-golang-crawler/persist"
 	"simple-golang-crawler/scheduler"
 )
 
 func main() {
+	var idType string
+	var id int64
+	var req *engine.Request
+	fmt.Println("Please enter your id type(`aid` or `upid`)")
+	fmt.Scan(&idType)
+	fmt.Println("Please enter your id")
+	fmt.Scan(&id)
+	if idType == "aid" {
+		req = parser.GetRequestByAid(id)
+	} else if idType == "upid" {
+		req = parser.GetRequestByUpId(id)
+	} else {
+		fmt.Println("Wrong type you enter")
+		os.Exit(1)
+	}
 	itemChan, err := persist.FileItemSaver(".")
-
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
@@ -20,9 +34,6 @@ func main() {
 
 	queueScheduler := scheduler.NewConcurrentScheduler()
 	conEngine := engine.NewConcurrentEngine(10, queueScheduler, itemChan)
-
-	req := engine.NewRequest("https://api.bilibili.com/x/space/arc/search?mid=585267&ps=30&tid=0&pn=2&keyword=&order=pubdate&jsonp=jsonp", parser.UpSpaceParseFun, fetcher.DefaultFetcher)
-
 	conEngine.Run(req)
-
+	fmt.Println("All work has done")
 }

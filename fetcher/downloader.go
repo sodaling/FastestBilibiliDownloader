@@ -40,7 +40,7 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 		}
 
 		if resp.StatusCode != http.StatusPartialContent {
-			fmt.Println(resp.StatusCode)
+			fmt.Println(url, "raise by ", resp.StatusCode, ". Aid:", videoCid.ParAid.Aid, ",cid:", videoCid.Cid)
 			return nil, fmt.Errorf("wrong status code: %d", resp.StatusCode)
 		}
 		defer resp.Body.Close()

@@ -8,34 +8,38 @@ import (
 	"simple-golang-crawler/model"
 )
 
-var getAidUrlTemp = "https://api.bilibili.com/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
-var getCidUrlTemp = "https://api.bilibili.com/x/player/pagelist?aid=%d"
+var GetAidUrlTemp = "https://api.bilibili.com/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
+var GetCidUrlTemp = "https://api.bilibili.com/x/player/pagelist?aid=%d"
 
 func UpSpaceParseFun(contents []byte, url string) engine.ParseResult {
 	var retParseResult engine.ParseResult
 	value := gjson.GetManyBytes(contents, "data.list.vlist", "data.page")
 
-	retParseResult.Requests = getAidDetailReqList(value[0])
-	retParseResult.Requests = append(retParseResult.Requests, getNewBilibiliUpSpaceReqList(value[1])...)
+	var upid int64
+	retParseResult.Requests, upid = getAidDetailReqList(value[0])
+	retParseResult.Requests = append(retParseResult.Requests, getNewBilibiliUpSpaceReqList(value[1], upid)...)
 
 	return retParseResult
 
 }
-func getAidDetailReqList(pageInfo gjson.Result) []*engine.Request {
+
+func getAidDetailReqList(pageInfo gjson.Result) ([]*engine.Request, int64) {
 	var retRequests []*engine.Request
+	var upid int64
 	for _, i := range pageInfo.Array() {
 		aid := i.Get("aid").Int()
+		upid = i.Get("mid").Int()
 		title := i.Get("title").String()
-		reqUrl := fmt.Sprintf(getCidUrlTemp, aid)
+		reqUrl := fmt.Sprintf(GetCidUrlTemp, aid)
 		videoAid := model.NewVideoAidInfo(aid, title)
 		reqParseFunction := GenGetAidChildendParseFun(videoAid)
 		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)
 	}
-	return retRequests
+	return retRequests, upid
 }
 
-func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result) []*engine.Request {
+func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.Request {
 	var retRequests []*engine.Request
 
 	count := pageInfo.Get("count").Int()
@@ -50,10 +54,18 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result) []*engine.Request {
 		if i == pn {
 			continue
 		}
-		reqUrl := fmt.Sprintf(getAidUrlTemp, 585267, i)
-		reqParseFunction := UpSpaceParseFun
-		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
+		reqUrl := fmt.Sprintf(GetAidUrlTemp, upid, i)
+		req := engine.NewRequest(reqUrl, UpSpaceParseFun, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)
 	}
 	return retRequests
+}
+
+func GetRequestByAid(aid int64) *engine.Request {
+	panic("not finished")
+}
+
+func GetRequestByUpId(upid int64) *engine.Request {
+	reqUrl := fmt.Sprintf(GetAidUrlTemp, upid, 1)
+	return engine.NewRequest(reqUrl, UpSpaceParseFun, fetcher.DefaultFetcher)
 }
