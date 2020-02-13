@@ -5,10 +5,11 @@ import (
 	"github.com/tidwall/gjson"
 	"simple-golang-crawler/engine"
 	"simple-golang-crawler/fetcher"
+	"simple-golang-crawler/model"
 )
 
-var getAidUrl = "https://api.bilibili.com/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
-var getCidUrl = "https://api.bilibili.com/x/player/pagelist?aid=%d"
+var getAidUrlTemp = "https://api.bilibili.com/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
+var getCidUrlTemp = "https://api.bilibili.com/x/player/pagelist?aid=%d"
 
 func UpSpaceParseFun(contents []byte, url string) engine.ParseResult {
 	var retParseResult engine.ParseResult
@@ -25,8 +26,9 @@ func getAidDetailReqList(pageInfo gjson.Result) []*engine.Request {
 	for _, i := range pageInfo.Array() {
 		aid := i.Get("aid").Int()
 		title := i.Get("title").String()
-		reqUrl := fmt.Sprintf(getCidUrl, aid)
-		reqParseFunction := GenGetAidInfoParseFun(aid, title)
+		reqUrl := fmt.Sprintf(getCidUrlTemp, aid)
+		videoAid := model.NewVideoAidInfo(aid, title)
+		reqParseFunction := GenGetAidChildendParseFun(videoAid)
 		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)
 	}
@@ -48,7 +50,7 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result) []*engine.Request {
 		if i == pn {
 			continue
 		}
-		reqUrl := fmt.Sprintf(getAidUrl, 585267, i)
+		reqUrl := fmt.Sprintf(getAidUrlTemp, 585267, i)
 		reqParseFunction := UpSpaceParseFun
 		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)

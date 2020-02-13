@@ -7,14 +7,14 @@ import (
 	"simple-golang-crawler/model"
 )
 
-func GenVideoDownloadParseFun(video *model.VideoInfo) engine.ParseFunc {
+func GenVideoDownloadParseFun(videoCid *model.VideoCidInfo) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 		retParseResult := engine.ParseResult{}
 
 		durlArray := gjson.GetBytes(contents, "durl").Array()
 		for _, i := range durlArray {
 			videoUrl := i.Get("url").String()
-			req := engine.NewRequest(videoUrl, NilParseFun, fetcher.GenVideoFetcher(video))
+			req := engine.NewRequest(videoUrl, NilParseFun, fetcher.GenVideoFetcher(videoCid))
 			retParseResult.Requests = append(retParseResult.Requests, req)
 		}
 		return retParseResult
