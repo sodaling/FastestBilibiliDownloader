@@ -1,5 +1,7 @@
 package engine
 
+import "context"
+
 type ConcurrentEngine struct {
 	WorkerCount int
 	Scheduler   Scheduler
@@ -11,7 +13,7 @@ func NewConcurrentEngine(workerCount int, scheduler Scheduler, itemChan chan Ite
 }
 
 type Scheduler interface {
-	Run()
+	Run(context.Context)
 	GetWorkerChan() chan *Request
 	Submit(*Request)
 	WorkerReadyNotifier
@@ -22,8 +24,10 @@ type WorkerReadyNotifier interface {
 }
 
 func (c *ConcurrentEngine) Run(seed ...*Request) {
+	requestCount := 0
 	resultChan := make(chan ParseResult)
-	c.Scheduler.Run()
+	ctx, cancel := context.WithCancel(context.Background())
+	c.Scheduler.Run(ctx)
 
 	for i := 0; i < c.WorkerCount; i++ {
 		CreateWorker(resultChan, c.Scheduler.GetWorkerChan(), c.Scheduler)
@@ -31,6 +35,7 @@ func (c *ConcurrentEngine) Run(seed ...*Request) {
 
 	for _, req := range seed {
 		hasVisited(req.Url)
+		requestCount += 1
 		c.Scheduler.Submit(req)
 	}
 
@@ -47,11 +52,17 @@ func (c *ConcurrentEngine) Run(seed ...*Request) {
 			if hasVisited(req.Url) {
 				continue
 			} else {
+				requestCount += 1
 				c.Scheduler.Submit(req)
 			}
 		}
+		requestCount -= 1
+		if requestCount == 0 {
+			break
+		}
 	}
 
+	cancel()
 }
 
 var urlVisited = make(map[string]struct{})

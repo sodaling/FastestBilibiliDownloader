@@ -1,23 +1,26 @@
 package scheduler
 
-import "simple-golang-crawler/engine"
+import (
+	"context"
+	"simple-golang-crawler/engine"
+)
 
 type ConcurrentScheduler struct {
 	RequestsChan chan *engine.Request
 	WorkerChan   chan chan *engine.Request
 }
 
-func NewConcurrentScheduler() *ConcurrentScheduler {
+func NewConcurrentScheduler() engine.Scheduler {
 	return &ConcurrentScheduler{}
 }
 
-func (s *ConcurrentScheduler) Run() {
+func (s *ConcurrentScheduler) Run(ctx context.Context) {
 	s.WorkerChan = make(chan chan *engine.Request)
 	s.RequestsChan = make(chan *engine.Request)
 	go func() {
 		var workerQ []chan *engine.Request
 		var requestQ []*engine.Request
-
+	loop:
 		for {
 			var readyWorker chan *engine.Request
 			var readyRequest *engine.Request
@@ -33,6 +36,8 @@ func (s *ConcurrentScheduler) Run() {
 			case readyWorker <- readyRequest:
 				requestQ = requestQ[1:]
 				workerQ = workerQ[1:]
+			case <-ctx.Done():
+				break loop
 			}
 		}
 	}()
