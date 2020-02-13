@@ -7,8 +7,8 @@ import (
 	"simple-golang-crawler/engine"
 	"simple-golang-crawler/fetcher"
 	"simple-golang-crawler/model"
+	"simple-golang-crawler/tool"
 	"strconv"
-	"strings"
 )
 
 var videoDownloadApi = "https://interface.bilibili.com/v2/playurl?%s&sign=%s"
@@ -21,7 +21,7 @@ func GenGetAidInfoParseFun(aid int64, title string) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 		var retParseResult engine.ParseResult
 		data := gjson.GetBytes(contents, "data").Array()
-		appkey, sec := getAppkey(entropy)
+		appkey, sec := tool.GetAppkey(entropy)
 
 		for _, i := range data {
 			videoInfo := &model.VideoInfo{}
@@ -36,32 +36,8 @@ func GenGetAidInfoParseFun(aid int64, title string) engine.ParseFunc {
 			urlApi := fmt.Sprintf(playApiTemp, params, chksum)
 			req := engine.NewRequest(urlApi, GenVideoDownloadParseFun(videoInfo), fetcher.DefaultFetcher)
 			retParseResult.Requests = append(retParseResult.Requests, req)
-
-			//filename := fmt.Sprintf("%d:%s", aid, title)
-			//err := os.MkdirAll(path.Join("./download/", filename), 0777)
-			//if err != nil {
-			//	log.Println(err)
-			//}
 		}
 
 		return retParseResult
 	}
-}
-
-func getAppkey(entropy string) (appkey, sec string) {
-	revEntropy := reverseRunes([]rune(entropy))
-	for i := range revEntropy {
-		revEntropy[i] = revEntropy[i] + 2
-	}
-	ret := strings.Split(string(revEntropy), ":")
-
-	return ret[0], ret[1]
-}
-
-func reverseRunes(runes []rune) []rune {
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-
-	return runes
 }

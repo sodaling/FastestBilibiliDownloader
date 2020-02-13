@@ -46,13 +46,13 @@ func GenVideoFetcher(videoInfo *model.VideoInfo) FetchFun {
 		defer resp.Body.Close()
 
 		aidPath := tool.GetAidFileDownloadDir(videoInfo.Aid,videoInfo.Title)
-
 		filename := fmt.Sprintf("%d.flv", videoInfo.Cid)
 		file, err := os.Create(path.Join(aidPath, filename))
 		if err != nil {
 			os.Exit(1)
 		}
 		defer file.Close()
+
 		log.Println(filename + " is downloading.")
 		io.Copy(file, resp.Body)
 		log.Println(filename + " has finished.")
