@@ -12,12 +12,6 @@ func GetAidFileDownloadDir(aid int64, title string) string {
 		panic(err)
 	}
 	fullDirPath := path.Join(curDir, "download", fmt.Sprintf("%d:%s", aid, title))
-	if FileExist(fullDirPath) {
-		err := os.RemoveAll(fullDirPath)
-		if err != nil {
-			panic(err)
-		}
-	}
 	err = os.MkdirAll(fullDirPath, 0777)
 	if err != nil {
 		panic(err)
