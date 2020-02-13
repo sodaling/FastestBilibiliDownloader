@@ -5,6 +5,7 @@
 # IntelliJ project files
 .idea
 *.iml
+download
 out
 gen
 ### Go template

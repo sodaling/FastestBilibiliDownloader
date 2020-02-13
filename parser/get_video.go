@@ -9,7 +9,7 @@ import (
 
 var count int
 
-func GenVideoParseFun(video *model.VideoInfo) engine.ParseFunc {
+func GenVideoDownloadParseFun(video *model.VideoInfo) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 		retParseResult := engine.ParseResult{}
 

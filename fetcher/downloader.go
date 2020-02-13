@@ -3,9 +3,12 @@ package fetcher
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
+	"path"
 	"simple-golang-crawler/model"
+	"simple-golang-crawler/tool"
 )
 
 var startUrlTem = "https://api.bilibili.com/x/web-interface/view?aid=%d/?p=%d"
@@ -41,14 +44,18 @@ func GenVideoFetcher(videoInfo *model.VideoInfo) FetchFun {
 			return nil, fmt.Errorf("wrong status code: %d", resp.StatusCode)
 		}
 		defer resp.Body.Close()
-		filename := fmt.Sprintf("%d:%d", videoInfo.Aid, videoInfo.Cid)
-		file, err := os.Create(filename)
+
+		aidPath := tool.GetAidFileDownloadDir(videoInfo.Aid,videoInfo.Title)
+
+		filename := fmt.Sprintf("%d.flv", videoInfo.Cid)
+		file, err := os.Create(path.Join(aidPath, filename))
 		if err != nil {
 			os.Exit(1)
 		}
 		defer file.Close()
+		log.Println(filename + " is downloading.")
 		io.Copy(file, resp.Body)
-		fmt.Println(filename + "has finished")
+		log.Println(filename + " has finished.")
 
 		return nil, nil
 	}

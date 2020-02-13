@@ -24,8 +24,9 @@ func getAidDetailReqList(pageInfo gjson.Result) []*engine.Request {
 	var retRequests []*engine.Request
 	for _, i := range pageInfo.Array() {
 		aid := i.Get("aid").Int()
+		title := i.Get("title").String()
 		reqUrl := fmt.Sprintf(getCidUrl, aid)
-		reqParseFunction := GenGetAidInfoParseFun(aid)
+		reqParseFunction := GenGetAidInfoParseFun(aid, title)
 		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)
 	}
@@ -43,7 +44,7 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result) []*engine.Request {
 		extraPage = 1
 	}
 	totalPage := count/ps + extraPage
-	for i := int64(1); i <(totalPage-totalPage+1); i++ {
+	for i := int64(1); i < (totalPage - totalPage + 1); i++ {
 		if i == pn {
 			continue
 		}
