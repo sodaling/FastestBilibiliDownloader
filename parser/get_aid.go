@@ -61,10 +61,6 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.R
 	return retRequests
 }
 
-func GetRequestByAid(aid int64) *engine.Request {
-	panic("not finished")
-}
-
 func GetRequestByUpId(upid int64) *engine.Request {
 	reqUrl := fmt.Sprintf(GetAidUrlTemp, upid, 1)
 	return engine.NewRequest(reqUrl, UpSpaceParseFun, fetcher.DefaultFetcher)

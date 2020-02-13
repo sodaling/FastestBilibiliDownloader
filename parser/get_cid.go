@@ -40,3 +40,11 @@ func GenGetAidChildendParseFun(videoAid *model.VideoAidInfo) engine.ParseFunc {
 		return retParseResult
 	}
 }
+
+func GetRequestByAid(aid int64) *engine.Request {
+	reqUrl := fmt.Sprintf(GetCidUrlTemp, aid)
+	videoAid := model.NewVideoAidInfo(aid, fmt.Sprintf("%d", aid))
+	reqParseFunction := GenGetAidChildendParseFun(videoAid)
+	req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
+	return req
+}

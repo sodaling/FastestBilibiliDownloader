@@ -46,7 +46,7 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 		defer resp.Body.Close()
 
 		aidPath := tool.GetAidFileDownloadDir(videoCid.ParAid.Aid, videoCid.ParAid.Title)
-		filename := fmt.Sprintf("%d.flv", videoCid.Cid)
+		filename := fmt.Sprintf("%d.flv", videoCid.Page)
 		file, err := os.Create(path.Join(aidPath, filename))
 		if err != nil {
 			os.Exit(1)
