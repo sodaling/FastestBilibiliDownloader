@@ -1,6 +1,9 @@
 package engine
 
-import "context"
+import (
+	"context"
+	"sync"
+)
 
 type ConcurrentEngine struct {
 	WorkerCount int
@@ -28,6 +31,7 @@ func (c *ConcurrentEngine) Run(seed ...*Request) {
 	resultChan := make(chan ParseResult)
 	ctx, cancel := context.WithCancel(context.Background())
 	c.Scheduler.Run(ctx)
+	var wg sync.WaitGroup
 
 	for i := 0; i < c.WorkerCount; i++ {
 		CreateWorker(resultChan, c.Scheduler.GetWorkerChan(), c.Scheduler)
@@ -43,8 +47,10 @@ func (c *ConcurrentEngine) Run(seed ...*Request) {
 		result := <-resultChan
 
 		for _, item := range result.Items {
+			wg.Add(1)
 			go func(item *Item) {
 				c.ItemChan <- item
+				wg.Done()
 			}(item)
 		}
 
@@ -63,6 +69,8 @@ func (c *ConcurrentEngine) Run(seed ...*Request) {
 	}
 
 	cancel()
+	wg.Wait()
+	close(c.ItemChan)
 }
 
 var urlVisited = make(map[string]struct{})
