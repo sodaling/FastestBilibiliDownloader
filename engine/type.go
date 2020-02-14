@@ -7,7 +7,7 @@ type ParseFunc func(contents []byte, url string) ParseResult
 type Request struct {
 	Url           string
 	ParseFunction ParseFunc
-	FetchFun fetcher.FetchFun
+	FetchFun      fetcher.FetchFun
 }
 
 func NewRequest(url string, parseFunction ParseFunc, fetchFun fetcher.FetchFun) *Request {
@@ -16,10 +16,13 @@ func NewRequest(url string, parseFunction ParseFunc, fetchFun fetcher.FetchFun) 
 
 type ParseResult struct {
 	Requests []*Request
-	Items    []Item
+	Items    []*Item
 }
 
 type Item struct {
-	Url     string
 	Payload interface{}
+}
+
+func NewItem(payload interface{}) *Item {
+	return &Item{Payload: payload}
 }

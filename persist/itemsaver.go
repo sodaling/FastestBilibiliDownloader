@@ -1,18 +1,20 @@
 package persist
 
 import (
+	"fmt"
 	"log"
 	"simple-golang-crawler/engine"
+	"simple-golang-crawler/model"
 )
 
-func FileItemSaver(savePath string) (chan engine.Item, error) {
-	out := make(chan engine.Item)
+func VideoItemProcessor() (chan *engine.Item, error) {
+	out := make(chan *engine.Item)
 	go func() {
 		itemCount := 0
 		for {
 			item := <-out
-			//log.Printf("Item Saver:got item "+
-			//	"#%d: %v", itemCount, item)
+			log.Printf("Item Saver:got item "+
+				"#%d: %v", itemCount, item)
 			itemCount++
 			err := save(item)
 			if err != nil {
@@ -24,8 +26,14 @@ func FileItemSaver(savePath string) (chan engine.Item, error) {
 	return out, nil
 }
 
-func save(item engine.Item) error {
-	//video := item.Payload.(*model.Video)
-	//fmt.Println((*video).Aid)
+func save(item *engine.Item) error {
+	switch x := item.Payload.(type) {
+	case *model.VideoCidInfo:
+		fmt.Println("cid:",*x)
+	case *model.VideoAidInfo:
+		fmt.Println("aid:",*x)
+	default:
+		panic(fmt.Sprintf("unexpected type %T: %v", x, x))
+	}
 	return nil
 }

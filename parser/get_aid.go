@@ -8,35 +8,39 @@ import (
 	"simple-golang-crawler/model"
 )
 
-var GetAidUrlTemp = "https://api.bilibili.com/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
-var GetCidUrlTemp = "https://api.bilibili.com/x/player/pagelist?aid=%d"
+var getAidUrlTemp = "https://api.bilibili.com/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
+var getCidUrlTemp = "https://api.bilibili.com/x/player/pagelist?aid=%d"
 
 func UpSpaceParseFun(contents []byte, url string) engine.ParseResult {
 	var retParseResult engine.ParseResult
 	value := gjson.GetManyBytes(contents, "data.list.vlist", "data.page")
 
 	var upid int64
-	retParseResult.Requests, upid = getAidDetailReqList(value[0])
+	retParseResult.Requests, retParseResult.Items, upid = getAidDetailReqList(value[0])
 	retParseResult.Requests = append(retParseResult.Requests, getNewBilibiliUpSpaceReqList(value[1], upid)...)
 
 	return retParseResult
 
 }
 
-func getAidDetailReqList(pageInfo gjson.Result) ([]*engine.Request, int64) {
+func getAidDetailReqList(pageInfo gjson.Result) ([]*engine.Request, []*engine.Item, int64) {
 	var retRequests []*engine.Request
+	var retItems []*engine.Item
 	var upid int64
 	for _, i := range pageInfo.Array() {
 		aid := i.Get("aid").Int()
 		upid = i.Get("mid").Int()
 		title := i.Get("title").String()
-		reqUrl := fmt.Sprintf(GetCidUrlTemp, aid)
+		reqUrl := fmt.Sprintf(getCidUrlTemp, aid)
 		videoAid := model.NewVideoAidInfo(aid, title)
-		reqParseFunction := GenGetAidChildendParseFun(videoAid)
+		reqParseFunction := GenGetAidChildrenParseFun(videoAid)
 		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)
+
+		item := engine.NewItem(videoAid)
+		retItems = append(retItems, item)
 	}
-	return retRequests, upid
+	return retRequests, retItems, upid
 }
 
 func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.Request {
@@ -54,7 +58,7 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.R
 		if i == pn {
 			continue
 		}
-		reqUrl := fmt.Sprintf(GetAidUrlTemp, upid, i)
+		reqUrl := fmt.Sprintf(getAidUrlTemp, upid, i)
 		req := engine.NewRequest(reqUrl, UpSpaceParseFun, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)
 	}
@@ -62,6 +66,6 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.R
 }
 
 func GetRequestByUpId(upid int64) *engine.Request {
-	reqUrl := fmt.Sprintf(GetAidUrlTemp, upid, 1)
+	reqUrl := fmt.Sprintf(getAidUrlTemp, upid, 1)
 	return engine.NewRequest(reqUrl, UpSpaceParseFun, fetcher.DefaultFetcher)
 }

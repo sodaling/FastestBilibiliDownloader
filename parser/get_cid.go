@@ -17,7 +17,7 @@ var paramsTemp = "appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type="
 var playApiTemp = "https://interface.bilibili.com/v2/playurl?%s&sign=%s"
 var quailty = "80"
 
-func GenGetAidChildendParseFun(videoAid *model.VideoAidInfo) engine.ParseFunc {
+func GenGetAidChildrenParseFun(videoAid *model.VideoAidInfo) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 		var retParseResult engine.ParseResult
 		data := gjson.GetBytes(contents, "data").Array()
@@ -41,10 +41,10 @@ func GenGetAidChildendParseFun(videoAid *model.VideoAidInfo) engine.ParseFunc {
 	}
 }
 
-func GetRequestByAid(aid int64) *engine.Request {
-	reqUrl := fmt.Sprintf(GetCidUrlTemp, aid)
+func GetRequestByAid(aid int64) (*engine.Request, *model.VideoAidInfo) {
+	reqUrl := fmt.Sprintf(getCidUrlTemp, aid)
 	videoAid := model.NewVideoAidInfo(aid, fmt.Sprintf("%d", aid))
-	reqParseFunction := GenGetAidChildendParseFun(videoAid)
+	reqParseFunction := GenGetAidChildrenParseFun(videoAid)
 	req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
-	return req
+	return req, videoAid
 }

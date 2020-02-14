@@ -5,10 +5,10 @@ import "context"
 type ConcurrentEngine struct {
 	WorkerCount int
 	Scheduler   Scheduler
-	ItemChan    chan Item
+	ItemChan    chan *Item
 }
 
-func NewConcurrentEngine(workerCount int, scheduler Scheduler, itemChan chan Item) *ConcurrentEngine {
+func NewConcurrentEngine(workerCount int, scheduler Scheduler, itemChan chan *Item) *ConcurrentEngine {
 	return &ConcurrentEngine{WorkerCount: workerCount, Scheduler: scheduler, ItemChan: itemChan}
 }
 
@@ -43,7 +43,7 @@ func (c *ConcurrentEngine) Run(seed ...*Request) {
 		result := <-resultChan
 
 		for _, item := range result.Items {
-			go func(item Item) {
+			go func(item *Item) {
 				c.ItemChan <- item
 			}(item)
 		}
@@ -82,7 +82,12 @@ func CreateWorker(out chan ParseResult, in chan *Request, notifier WorkerReadyNo
 		for {
 			notifier.Ready(in)
 			req := <-in
-			ret, _ := work(req)
+			ret, err := work(req)
+			if err != nil {
+				var errRet ParseResult
+				out <- errRet
+				continue
+			}
 			out <- ret
 		}
 	}()
