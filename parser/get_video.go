@@ -14,13 +14,19 @@ func GenVideoDownloadParseFun(videoCid *model.VideoCidInfo) engine.ParseFunc {
 		durlArray := gjson.GetBytes(contents, "durl").Array()
 		for _, i := range durlArray {
 			videoUrl := i.Get("url").String()
-			req := engine.NewRequest(videoUrl, NilParseFun, fetcher.GenVideoFetcher(videoCid))
+			req := engine.NewRequest(videoUrl, recordCidParseFun(videoCid), fetcher.GenVideoFetcher(videoCid))
 			retParseResult.Requests = append(retParseResult.Requests, req)
 		}
 		return retParseResult
 	}
 }
 
-func NilParseFun(contents []byte, url string) engine.ParseResult {
-	return engine.ParseResult{}
+func recordCidParseFun(cidVideo *model.VideoCidInfo) engine.ParseFunc {
+	return func(contents []byte, url string) engine.ParseResult {
+		var retResult engine.ParseResult
+
+		item := engine.NewItem(cidVideo)
+		retResult.Items = append(retResult.Items, item)
+		return retResult
+	}
 }

@@ -3,6 +3,7 @@ package tool
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 )
 
@@ -12,7 +13,7 @@ func GetAidFileDownloadDir(aid int64, title string) string {
 		panic(err)
 	}
 	fullDirPath := path.Join(curDir, "download", fmt.Sprintf("%d:%s", aid, title))
-	err = os.MkdirAll(fullDirPath, 0777)
+	err = os.MkdirAll(fullDirPath, 0666)
 	if err != nil {
 		panic(err)
 	}
@@ -22,4 +23,13 @@ func GetAidFileDownloadDir(aid int64, title string) string {
 func FileExist(fileName string) bool {
 	_, err := os.Stat(fileName)
 	return err == nil || os.IsExist(err)
+}
+
+func CheckFfmegStatus() bool {
+	_, err := exec.LookPath("ffmpeg")
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
 }
