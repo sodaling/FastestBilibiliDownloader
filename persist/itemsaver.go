@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-var videInfoMap = make(map[int64]int64)
+var videPageMap = make(map[int64]int64)
 
 func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 	out := make(chan *engine.Item)
@@ -20,11 +20,13 @@ func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 			switch x := item.Payload.(type) {
 			case *model.VideoAidInfo:
 				fmt.Println("aid:", x.Aid)
-				videInfoMap[x.Aid] = x.TotalPage
+				videPageMap[x.Aid] = x.GetPage()
+				fmt.Println(videPageMap[x.Aid])
 			case *model.VideoCidInfo:
 				fmt.Println("cid:", x.Cid)
-				videInfoMap[x.ParAid.Aid] -= 1
-				if videInfoMap[x.ParAid.Aid] == 0 {
+				videPageMap[x.ParAid.Aid] -= 1
+				fmt.Println(videPageMap[x.ParAid.Aid])
+				if videPageMap[x.ParAid.Aid] == 0 {
 					wgInside.Add(1)
 					go mergeVideo(x, &wgInside)
 				}
