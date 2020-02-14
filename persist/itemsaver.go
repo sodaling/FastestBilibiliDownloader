@@ -29,11 +29,25 @@ func VideoItemProcessor() (chan *engine.Item, error) {
 func save(item *engine.Item) error {
 	switch x := item.Payload.(type) {
 	case *model.VideoCidInfo:
-		fmt.Println("cid:",*x)
+		fmt.Println("cid:", *x)
 	case *model.VideoAidInfo:
-		fmt.Println("aid:",*x)
+		fmt.Println("aid:", *x)
 	default:
 		panic(fmt.Sprintf("unexpected type %T: %v", x, x))
 	}
 	return nil
+}
+
+func VideoItemCleaner() (chan *engine.Item, error) {
+	out := make(chan *engine.Item)
+	go func() {
+		itemCount := 0
+		for {
+			item := <-out
+			log.Printf("Item Saver:got item "+
+				"#%d: %v", itemCount, item)
+			itemCount++
+		}
+	}()
+	return out, nil
 }

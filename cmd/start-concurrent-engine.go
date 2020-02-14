@@ -13,10 +13,15 @@ import (
 )
 
 func main() {
+	var itemChan chan *engine.Item
+	var err error
 	if !tool.CheckFfmegStatus() {
 		fmt.Println("Can't locate your ffmeg.The video your download can't be merged")
+		itemChan, err = persist.VideoItemCleaner()
+	} else {
+		itemChan, err = persist.VideoItemProcessor()
 	}
-	itemChan, err := persist.VideoItemProcessor()
+
 	var idType string
 	var id int64
 	var req *engine.Request
