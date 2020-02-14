@@ -8,39 +8,38 @@ import (
 	"sync"
 )
 
+var videInfoMap = make(map[int64]int64)
+
 func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 	out := make(chan *engine.Item)
 	go func() {
 		defer wgOutside.Done()
 		var wgInside sync.WaitGroup
-		itemCount := 0
 		for item := range out {
-			log.Printf("Item Saver:got item "+
-				"#%d: %v", itemCount, item)
-			itemCount++
-			err := save(item, &wgInside)
-			if err != nil {
-				log.Printf("Item Saver: error "+
-					"saving item %v:%v", item, err)
+
+			switch x := item.Payload.(type) {
+			case *model.VideoAidInfo:
+				fmt.Println("aid:", x.Aid)
+				videInfoMap[x.Aid] = x.TotalPage
+			case *model.VideoCidInfo:
+				fmt.Println("cid:", x.Cid)
+				videInfoMap[x.ParAid.Aid] -= 1
+				if videInfoMap[x.ParAid.Aid] == 0 {
+					wgInside.Add(1)
+					go mergeVideo(x, &wgInside)
+				}
+			default:
+				panic(fmt.Sprintf("unexpected type %T: %v", x, x))
 			}
+
 		}
 		wgInside.Wait()
 	}()
 	return out, nil
 }
 
-func save(item *engine.Item, wg *sync.WaitGroup) error {
-	wg.Add(1)
+func mergeVideo(videoCiD *model.VideoCidInfo, wg *sync.WaitGroup) {
 	defer wg.Done()
-	switch x := item.Payload.(type) {
-	case *model.VideoCidInfo:
-		fmt.Println("cid:", *x)
-	case *model.VideoAidInfo:
-		fmt.Println("aid:", *x)
-	default:
-		panic(fmt.Sprintf("unexpected type %T: %v", x, x))
-	}
-	return nil
 }
 
 func VideoItemCleaner() (chan *engine.Item, error) {
