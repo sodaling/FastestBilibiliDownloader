@@ -1,10 +1,8 @@
 package persist
 
 import (
-	"fmt"
 	"log"
 	"simple-golang-crawler/engine"
-	"simple-golang-crawler/model"
 )
 
 func FileItemSaver(savePath string) (chan engine.Item, error) {
@@ -27,7 +25,7 @@ func FileItemSaver(savePath string) (chan engine.Item, error) {
 }
 
 func save(item engine.Item) error {
-	video := item.Payload.(*model.Video)
-	fmt.Println((*video).Aid)
+	//video := item.Payload.(*model.Video)
+	//fmt.Println((*video).Aid)
 	return nil
 }

@@ -1,8 +1,6 @@
 package engine
 
-import (
-	"simple-golang-crawler/fetcher"
-)
+import "context"
 
 type ConcurrentEngine struct {
 	WorkerCount int
@@ -15,19 +13,21 @@ func NewConcurrentEngine(workerCount int, scheduler Scheduler, itemChan chan Ite
 }
 
 type Scheduler interface {
-	Run()
-	GetWorkerChan() chan Request
-	Submit(Request)
+	Run(context.Context)
+	GetWorkerChan() chan *Request
+	Submit(*Request)
 	WorkerReadyNotifier
 }
 
 type WorkerReadyNotifier interface {
-	Ready(chan Request)
+	Ready(chan *Request)
 }
 
-func (c *ConcurrentEngine) Run(seed ...Request) {
+func (c *ConcurrentEngine) Run(seed ...*Request) {
+	requestCount := 0
 	resultChan := make(chan ParseResult)
-	c.Scheduler.Run()
+	ctx, cancel := context.WithCancel(context.Background())
+	c.Scheduler.Run(ctx)
 
 	for i := 0; i < c.WorkerCount; i++ {
 		CreateWorker(resultChan, c.Scheduler.GetWorkerChan(), c.Scheduler)
@@ -35,6 +35,7 @@ func (c *ConcurrentEngine) Run(seed ...Request) {
 
 	for _, req := range seed {
 		hasVisited(req.Url)
+		requestCount += 1
 		c.Scheduler.Submit(req)
 	}
 
@@ -51,11 +52,17 @@ func (c *ConcurrentEngine) Run(seed ...Request) {
 			if hasVisited(req.Url) {
 				continue
 			} else {
+				requestCount += 1
 				c.Scheduler.Submit(req)
 			}
 		}
+		requestCount -= 1
+		if requestCount == 0 {
+			break
+		}
 	}
 
+	cancel()
 }
 
 var urlVisited = make(map[string]struct{})
@@ -70,22 +77,19 @@ func hasVisited(url string) bool {
 
 }
 
-func CreateWorker(out chan ParseResult, in chan Request, notifier WorkerReadyNotifier) {
+func CreateWorker(out chan ParseResult, in chan *Request, notifier WorkerReadyNotifier) {
 	go func() {
 		for {
 			notifier.Ready(in)
 			req := <-in
-			ret, err := work(req)
-			if err != nil {
-				continue
-			}
+			ret, _ := work(req)
 			out <- ret
 		}
 	}()
 }
 
-func work(request Request) (ParseResult, error) {
-	content, ok := fetcher.Fetch(request.Url)
+func work(request *Request) (ParseResult, error) {
+	content, ok := request.FetchFun(request.Url)
 	if ok != nil {
 		return ParseResult{}, ok
 	}
