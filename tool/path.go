@@ -13,7 +13,7 @@ func GetAidFileDownloadDir(aid int64, title string) string {
 		panic(err)
 	}
 	fullDirPath := path.Join(curDir, "download", fmt.Sprintf("%d:%s", aid, title))
-	err = os.MkdirAll(fullDirPath, 0666)
+	err = os.MkdirAll(fullDirPath, 0777)
 	if err != nil {
 		panic(err)
 	}

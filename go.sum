@@ -1,3 +1,6 @@
+github.com/go-cmd/cmd v1.2.0 h1:Aohz0ZG0nQbvT4z55Mh+fdegX48GSAXL3cSsbYxRfvI=
+github.com/go-cmd/cmd v1.2.0/go.mod h1:XgKkd0L6sv9WcYV0FS8RfG1RJCSTVHTsLeAD2pTgHt0=
+github.com/go-test/deep v1.0.5/go.mod h1:QV8Hv/iy04NyLBxAdO9njL0iVPN1S4d/A3NVv1V36o8=
 github.com/tidwall/gjson v1.5.0 h1:QCssIUI7J0RStkzIcI4A7O6P8rDA5wi5IPf70uqKSxg=
 github.com/tidwall/gjson v1.5.0/go.mod h1:P256ACg0Mn+j1RXIDXoss50DeIABTYK1PULOJHhxOls=
 github.com/tidwall/match v1.0.1 h1:PnKP62LPNxHKTwvHHZZzdOAOCtsJTjo6dZLCwpKm5xc=
