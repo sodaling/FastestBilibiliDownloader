@@ -11,14 +11,18 @@ import (
 	"simple-golang-crawler/tool"
 )
 
-var startUrlTem = "https://api.bilibili.com/x/web-interface/view?aid=%d/?p=%d"
+var startUrlTem = "https://api.bilibili.com/x/web-interface/view?aid=%d"
 
 func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
-	referer := fmt.Sprintf(startUrlTem, videoCid.ParAid.Aid, videoCid.Page)
+	referer := fmt.Sprintf(startUrlTem, videoCid.ParAid.Aid)
+	for i := int64(1); i <= videoCid.Page; i++ {
+		referer += fmt.Sprintf("/?p=%d", i)
+	}
 
 	return func(url string) (bytes []byte, err error) {
 		<-rateLimiter
-		client := http.DefaultClient
+		client := http.Client{CheckRedirect: genCheckRedirectfun(referer)}
+
 		request, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			fmt.Println(url)
@@ -49,6 +53,7 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 		filename := fmt.Sprintf("%d.flv", videoCid.Page)
 		file, err := os.Create(path.Join(aidPath, filename))
 		if err != nil {
+			log.Println(err)
 			os.Exit(1)
 		}
 		defer file.Close()
@@ -58,5 +63,12 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 		log.Println(videoCid.ParAid.Title + ":" + filename + " has finished.")
 
 		return nil, nil
+	}
+}
+
+func genCheckRedirectfun(referer string) func(req *http.Request, via []*http.Request) error {
+	return func(req *http.Request, via []*http.Request) error {
+		req.Header.Set("Referer", referer)
+		return nil
 	}
 }

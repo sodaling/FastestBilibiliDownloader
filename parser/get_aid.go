@@ -16,16 +16,15 @@ func UpSpaceParseFun(contents []byte, url string) engine.ParseResult {
 	value := gjson.GetManyBytes(contents, "data.list.vlist", "data.page")
 
 	var upid int64
-	retParseResult.Requests, retParseResult.Items, upid = getAidDetailReqList(value[0])
+	retParseResult.Requests, upid = getAidDetailReqList(value[0])
 	retParseResult.Requests = append(retParseResult.Requests, getNewBilibiliUpSpaceReqList(value[1], upid)...)
 
 	return retParseResult
 
 }
 
-func getAidDetailReqList(pageInfo gjson.Result) ([]*engine.Request, []*engine.Item, int64) {
+func getAidDetailReqList(pageInfo gjson.Result) ([]*engine.Request, int64) {
 	var retRequests []*engine.Request
-	var retItems []*engine.Item
 	var upid int64
 	for _, i := range pageInfo.Array() {
 		aid := i.Get("aid").Int()
@@ -36,11 +35,8 @@ func getAidDetailReqList(pageInfo gjson.Result) ([]*engine.Request, []*engine.It
 		reqParseFunction := GenGetAidChildrenParseFun(videoAid)
 		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)
-
-		item := engine.NewItem(videoAid)
-		retItems = append(retItems, item)
 	}
-	return retRequests, retItems, upid
+	return retRequests, upid
 }
 
 func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.Request {

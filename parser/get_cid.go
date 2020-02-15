@@ -23,11 +23,12 @@ func GenGetAidChildrenParseFun(videoAid *model.VideoAidInfo) engine.ParseFunc {
 		data := gjson.GetBytes(contents, "data").Array()
 		appkey, sec := tool.GetAppkey(entropy)
 
+		var videoTotalPage int64
 		for _, i := range data {
 			cid := i.Get("cid").Int()
 			page := i.Get("page").Int()
 			videoCid := model.NewVideoCidInfo(cid, videoAid, page)
-			videoAid.AddCid(videoCid)
+			videoTotalPage += 1
 			cidStr := strconv.FormatInt(videoCid.Cid, 10)
 
 			params := fmt.Sprintf(paramsTemp, appkey, cidStr, quailty, quailty)
@@ -37,14 +38,18 @@ func GenGetAidChildrenParseFun(videoAid *model.VideoAidInfo) engine.ParseFunc {
 			retParseResult.Requests = append(retParseResult.Requests, req)
 		}
 
+		videoAid.SetPage(videoTotalPage)
+		item := engine.NewItem(videoAid)
+		retParseResult.Items = append(retParseResult.Items, item)
+
 		return retParseResult
 	}
 }
 
-func GetRequestByAid(aid int64) (*engine.Request, *model.VideoAidInfo) {
+func GetRequestByAid(aid int64) *engine.Request {
 	reqUrl := fmt.Sprintf(getCidUrlTemp, aid)
 	videoAid := model.NewVideoAidInfo(aid, fmt.Sprintf("%d", aid))
 	reqParseFunction := GenGetAidChildrenParseFun(videoAid)
 	req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
-	return req, videoAid
+	return req
 }

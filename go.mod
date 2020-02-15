@@ -3,6 +3,7 @@ module simple-golang-crawler
 go 1.12
 
 require (
+	github.com/go-cmd/cmd v1.2.0
 	github.com/tidwall/gjson v1.5.0
 	github.com/tidwall/pretty v1.0.1 // indirect
 	golang.org/x/crypto v0.0.0-20200210222208-86ce3cb69678 // indirect

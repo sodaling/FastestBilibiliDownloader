@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"simple-golang-crawler/engine"
-	"simple-golang-crawler/model"
 	"simple-golang-crawler/parser"
 	"simple-golang-crawler/persist"
 	"simple-golang-crawler/scheduler"
@@ -34,10 +33,7 @@ func main() {
 	fmt.Scan(&id)
 
 	if idType == "aid" {
-		var videoAid *model.VideoAidInfo
-		req, videoAid = parser.GetRequestByAid(id)
-		item := engine.NewItem(videoAid)
-		go func() { itemChan <- item }()
+		req = parser.GetRequestByAid(id)
 	} else if idType == "upid" {
 		req = parser.GetRequestByUpId(id)
 	} else {
