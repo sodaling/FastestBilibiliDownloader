@@ -8,20 +8,16 @@ import (
 	"simple-golang-crawler/parser"
 	"simple-golang-crawler/persist"
 	"simple-golang-crawler/scheduler"
-	"simple-golang-crawler/tool"
 	"sync"
 )
 
 func main() {
-	var itemChan chan *engine.Item
+	itemProcessFun := persist.GetItemProcessFun()
 	var err error
 	var wg sync.WaitGroup
-	if !tool.CheckFfmegStatus() {
-		fmt.Println("Can't locate your ffmeg.The video your download can't be merged")
-		itemChan, err = persist.VideoItemCleaner()
-	} else {
-		wg.Add(1)
-		itemChan, err = persist.VideoItemProcessor(&wg)
+	itemChan, err := itemProcessFun(&wg)
+	if err != nil {
+		panic(err)
 	}
 
 	var idType string

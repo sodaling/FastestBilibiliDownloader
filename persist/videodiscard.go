@@ -3,9 +3,10 @@ package persist
 import (
 	"log"
 	"simple-golang-crawler/engine"
+	"sync"
 )
 
-func VideoItemCleaner() (chan *engine.Item, error) {
+func VideoItemCleaner(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 	out := make(chan *engine.Item)
 	go func() {
 		itemCount := 0
