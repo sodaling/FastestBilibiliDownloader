@@ -25,7 +25,7 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 
 		request, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			fmt.Println(url)
+			log.Println(url, err)
 			return nil, err
 		}
 		request.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:56.0) Gecko/20100101 Firefox/56.0")
@@ -39,12 +39,12 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 
 		resp, err := client.Do(request)
 		if err != nil {
-			fmt.Println(url)
+			log.Fatalf("Fail to download the video %d,err is %s", videoCid.Cid, err)
 			return nil, err
 		}
 
 		if resp.StatusCode != http.StatusPartialContent {
-			fmt.Println(url, "raise by ", resp.StatusCode, ". Aid:", videoCid.ParAid.Aid, ",cid:", videoCid.Cid)
+			log.Fatalf("Fail to download the video %d,status code is %d", videoCid.Cid, resp.StatusCode)
 			return nil, fmt.Errorf("wrong status code: %d", resp.StatusCode)
 		}
 		defer resp.Body.Close()

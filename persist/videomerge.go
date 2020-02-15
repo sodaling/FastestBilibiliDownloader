@@ -55,11 +55,11 @@ func mergeVideo(videoCiD *model.VideoCidInfo, wg *sync.WaitGroup) {
 		log.Printf("some thing wrong while merging video %d", videoCiD.ParAid.Aid)
 		return
 	}
-	fmt.Println(videoCiD.ParAid.Title, " download completed.Start merging videos now.")
+	log.Println(videoCiD.ParAid.Title, " download completed.Start merging videos now.")
 	command := []string{"ffmpeg", "-f", "concat", "-safe", "0", "-i", contactTxtPath, "-c", "copy", videoOutputPath}
 	findCmd := cmd.NewCmd(command[0], command[1:]...)
 	<-findCmd.Start()
-	fmt.Println("Video ", videoCiD.ParAid.Title, " merge is complete.")
+	log.Println("Video ", videoCiD.ParAid.Title, " merge is complete.")
 }
 
 func createMergeInfoTxt(aidPath string, aidPage int64) error {
