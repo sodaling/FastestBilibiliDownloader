@@ -20,7 +20,7 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 	}
 
 	return func(url string) (bytes []byte, err error) {
-		<-rateLimiter
+		<-rateLimiter.C
 		client := http.Client{CheckRedirect: genCheckRedirectfun(referer)}
 
 		request, err := http.NewRequest("GET", url, nil)
@@ -59,7 +59,10 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 		defer file.Close()
 
 		log.Println(videoCid.ParAid.Title + ":" + filename + " is downloading.")
-		io.Copy(file, resp.Body)
+		_, err = io.Copy(file, resp.Body)
+		if err != nil {
+			return nil, err
+		}
 		log.Println(videoCid.ParAid.Title + ":" + filename + " has finished.")
 
 		return nil, nil

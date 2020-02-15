@@ -3,15 +3,15 @@ package parser
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/tidwall/gjson"
 	"simple-golang-crawler/engine"
 	"simple-golang-crawler/fetcher"
 	"simple-golang-crawler/model"
 	"simple-golang-crawler/tool"
 	"strconv"
+
+	"github.com/tidwall/gjson"
 )
 
-var videoDownloadApi = "https://interface.bilibili.com/v2/playurl?%s&sign=%s"
 var entropy = "rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg"
 var paramsTemp = "appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type="
 var playApiTemp = "https://interface.bilibili.com/v2/playurl?%s&sign=%s"

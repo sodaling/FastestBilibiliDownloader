@@ -3,21 +3,22 @@ package fetcher
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"time"
+
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
-	"io/ioutil"
-	"net/http"
-	"time"
 )
 
-var rateLimiter = time.Tick(100 * time.Microsecond)
+var rateLimiter = time.NewTicker(100 * time.Microsecond)
 
 type FetchFun func(url string) ([]byte, error)
 
 func DefaultFetcher(url string) ([]byte, error) {
-	<-rateLimiter
+	<-rateLimiter.C
 	client := http.DefaultClient
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {

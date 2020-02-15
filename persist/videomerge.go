@@ -2,7 +2,7 @@ package persist
 
 import (
 	"fmt"
-	"github.com/go-cmd/cmd"
+	"log"
 	"os"
 	"path"
 	"simple-golang-crawler/engine"
@@ -10,6 +10,8 @@ import (
 	"simple-golang-crawler/tool"
 	"strings"
 	"sync"
+
+	"github.com/go-cmd/cmd"
 )
 
 var videPageMap = make(map[int64]int64)
@@ -48,10 +50,14 @@ func mergeVideo(videoCiD *model.VideoCidInfo, wg *sync.WaitGroup) {
 	contactTxtPath := path.Join(aidDirPath, contactFileName)
 	videoOutputPath := path.Join(aidDirPath, videoOutputName)
 
-	createMergeInfoTxt(aidDirPath, videoCiD.ParAid.GetPage())
+	err := createMergeInfoTxt(aidDirPath, videoCiD.ParAid.GetPage())
+	if err != nil {
+		log.Printf("some thing wrong while merging video %d", videoCiD.ParAid.Aid)
+		return
+	}
 	fmt.Println(videoCiD.ParAid.Title, " download completed.Start merging videos now.")
-	strs := []string{"ffmpeg", "-f", "concat", "-safe", "0", "-i", contactTxtPath, "-c", "copy", videoOutputPath}
-	findCmd := cmd.NewCmd(strs[0], strs[1:]...)
+	command := []string{"ffmpeg", "-f", "concat", "-safe", "0", "-i", contactTxtPath, "-c", "copy", videoOutputPath}
+	findCmd := cmd.NewCmd(command[0], command[1:]...)
 	<-findCmd.Start()
 	fmt.Println("Video ", videoCiD.ParAid.Title, " merge is complete.")
 }

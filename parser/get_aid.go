@@ -2,10 +2,11 @@ package parser
 
 import (
 	"fmt"
-	"github.com/tidwall/gjson"
 	"simple-golang-crawler/engine"
 	"simple-golang-crawler/fetcher"
 	"simple-golang-crawler/model"
+
+	"github.com/tidwall/gjson"
 )
 
 var getAidUrlTemp = "https://api.bilibili.com/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
@@ -50,7 +51,7 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.R
 		extraPage = 1
 	}
 	totalPage := count/ps + extraPage
-	for i := int64(1); i < (totalPage - totalPage + 1); i++ {
+	for i := int64(1); i < totalPage; i++ {
 		if i == pn {
 			continue
 		}

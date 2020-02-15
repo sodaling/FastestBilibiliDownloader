@@ -1,10 +1,11 @@
 package parser
 
 import (
-	"github.com/tidwall/gjson"
 	"simple-golang-crawler/engine"
 	"simple-golang-crawler/fetcher"
 	"simple-golang-crawler/model"
+
+	"github.com/tidwall/gjson"
 )
 
 func GenVideoDownloadParseFun(videoCid *model.VideoCidInfo) engine.ParseFunc {
