@@ -33,18 +33,19 @@ func main() {
 	} else if idType == "upid" {
 		req = parser.GetRequestByUpId(id)
 	} else {
-		fmt.Println("Wrong type you enter")
+		log.Fatalln("Wrong type you enter")
 		os.Exit(1)
 	}
 
 	if err != nil {
-		log.Println(err)
+		log.Fatalln(err)
 		os.Exit(1)
 	}
 
 	queueScheduler := scheduler.NewConcurrentScheduler()
 	conEngine := engine.NewConcurrentEngine(10, queueScheduler, itemChan)
+	log.Println("Start working.")
 	conEngine.Run(req)
 	wg.Wait()
-	fmt.Println("All work has done")
+	log.Println("All work has done")
 }

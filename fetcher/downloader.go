@@ -25,7 +25,7 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 
 		request, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			log.Println(url, err)
+			log.Fatalln(url, err)
 			return nil, err
 		}
 		request.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:56.0) Gecko/20100101 Firefox/56.0")
@@ -53,7 +53,7 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 		filename := fmt.Sprintf("%d.flv", videoCid.Page)
 		file, err := os.Create(path.Join(aidPath, filename))
 		if err != nil {
-			log.Println(err)
+			log.Fatalln(err)
 			os.Exit(1)
 		}
 		defer file.Close()
@@ -61,6 +61,7 @@ func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
 		log.Println(videoCid.ParAid.Title + ":" + filename + " is downloading.")
 		_, err = io.Copy(file, resp.Body)
 		if err != nil {
+			log.Printf("Failed to download video %d", videoCid.Cid)
 			return nil, err
 		}
 		log.Println(videoCid.ParAid.Title + ":" + filename + " has finished.")

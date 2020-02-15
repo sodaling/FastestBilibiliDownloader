@@ -8,7 +8,9 @@ import (
 
 func VideoItemCleaner(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 	out := make(chan *engine.Item)
+	wgOutside.Add(1)
 	go func() {
+		defer wgOutside.Done()
 		itemCount := 0
 		for {
 			item := <-out
