@@ -2,7 +2,7 @@ package tool
 
 import "strings"
 
-func GetAppkey(entropy string) (appkey, sec string) {
+func GetAppKey(entropy string) (appkey, sec string) {
 	revEntropy := ReverseRunes([]rune(entropy))
 	for i := range revEntropy {
 		revEntropy[i] = revEntropy[i] + 2

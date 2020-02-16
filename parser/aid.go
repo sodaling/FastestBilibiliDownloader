@@ -9,8 +9,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-var getAidUrlTemp = "https://api.bilibili.com/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
-var getCidUrlTemp = "https://api.bilibili.com/x/player/pagelist?aid=%d"
+var _getAidUrlTemp = "https://api.bilibili.com/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
+var _getCidUrlTemp = "https://api.bilibili.com/x/player/pagelist?aid=%d"
 
 func UpSpaceParseFun(contents []byte, url string) engine.ParseResult {
 	var retParseResult engine.ParseResult
@@ -31,7 +31,7 @@ func getAidDetailReqList(pageInfo gjson.Result) ([]*engine.Request, int64) {
 		aid := i.Get("aid").Int()
 		upid = i.Get("mid").Int()
 		title := i.Get("title").String()
-		reqUrl := fmt.Sprintf(getCidUrlTemp, aid)
+		reqUrl := fmt.Sprintf(_getCidUrlTemp, aid)
 		videoAid := model.NewVideoAidInfo(aid, title)
 		reqParseFunction := GenGetAidChildrenParseFun(videoAid)
 		req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
@@ -55,7 +55,7 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.R
 		if i == pn {
 			continue
 		}
-		reqUrl := fmt.Sprintf(getAidUrlTemp, upid, i)
+		reqUrl := fmt.Sprintf(_getAidUrlTemp, upid, i)
 		req := engine.NewRequest(reqUrl, UpSpaceParseFun, fetcher.DefaultFetcher)
 		retRequests = append(retRequests, req)
 	}
@@ -63,6 +63,6 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.R
 }
 
 func GetRequestByUpId(upid int64) *engine.Request {
-	reqUrl := fmt.Sprintf(getAidUrlTemp, upid, 1)
+	reqUrl := fmt.Sprintf(_getAidUrlTemp, upid, 1)
 	return engine.NewRequest(reqUrl, UpSpaceParseFun, fetcher.DefaultFetcher)
 }

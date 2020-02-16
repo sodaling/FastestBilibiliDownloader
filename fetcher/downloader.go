@@ -11,16 +11,16 @@ import (
 	"simple-golang-crawler/tool"
 )
 
-var startUrlTem = "https://api.bilibili.com/x/web-interface/view?aid=%d"
+var _startUrlTem = "https://api.bilibili.com/x/web-interface/view?aid=%d"
 
 func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
-	referer := fmt.Sprintf(startUrlTem, videoCid.ParAid.Aid)
+	referer := fmt.Sprintf(_startUrlTem, videoCid.ParAid.Aid)
 	for i := int64(1); i <= videoCid.Page; i++ {
 		referer += fmt.Sprintf("/?p=%d", i)
 	}
 
 	return func(url string) (bytes []byte, err error) {
-		<-rateLimiter.C
+		<-_rateLimiter.C
 		client := http.Client{CheckRedirect: genCheckRedirectfun(referer)}
 
 		request, err := http.NewRequest("GET", url, nil)

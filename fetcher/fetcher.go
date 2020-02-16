@@ -14,12 +14,12 @@ import (
 	"golang.org/x/text/transform"
 )
 
-var rateLimiter = time.NewTicker(100 * time.Microsecond)
+var _rateLimiter = time.NewTicker(100 * time.Microsecond)
 
 type FetchFun func(url string) ([]byte, error)
 
 func DefaultFetcher(url string) ([]byte, error) {
-	<-rateLimiter.C
+	<-_rateLimiter.C
 	client := http.DefaultClient
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {

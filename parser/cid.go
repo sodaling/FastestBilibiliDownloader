@@ -12,16 +12,16 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-var entropy = "rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg"
-var paramsTemp = "appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type="
-var playApiTemp = "https://interface.bilibili.com/v2/playurl?%s&sign=%s"
-var quailty = "80"
+var _entropy = "rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg"
+var _paramsTemp = "appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type="
+var _playApiTemp = "https://interface.bilibili.com/v2/playurl?%s&sign=%s"
+var _quality = "80"
 
 func GenGetAidChildrenParseFun(videoAid *model.VideoAidInfo) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 		var retParseResult engine.ParseResult
 		data := gjson.GetBytes(contents, "data").Array()
-		appkey, sec := tool.GetAppkey(entropy)
+		appKey, sec := tool.GetAppKey(_entropy)
 
 		var videoTotalPage int64
 		for _, i := range data {
@@ -31,9 +31,9 @@ func GenGetAidChildrenParseFun(videoAid *model.VideoAidInfo) engine.ParseFunc {
 			videoTotalPage += 1
 			cidStr := strconv.FormatInt(videoCid.Cid, 10)
 
-			params := fmt.Sprintf(paramsTemp, appkey, cidStr, quailty, quailty)
+			params := fmt.Sprintf(_paramsTemp, appKey, cidStr, _quality, _quality)
 			chksum := fmt.Sprintf("%x", md5.Sum([]byte(params+sec)))
-			urlApi := fmt.Sprintf(playApiTemp, params, chksum)
+			urlApi := fmt.Sprintf(_playApiTemp, params, chksum)
 			req := engine.NewRequest(urlApi, GenVideoDownloadParseFun(videoCid), fetcher.DefaultFetcher)
 			retParseResult.Requests = append(retParseResult.Requests, req)
 		}
@@ -47,7 +47,7 @@ func GenGetAidChildrenParseFun(videoAid *model.VideoAidInfo) engine.ParseFunc {
 }
 
 func GetRequestByAid(aid int64) *engine.Request {
-	reqUrl := fmt.Sprintf(getCidUrlTemp, aid)
+	reqUrl := fmt.Sprintf(_getCidUrlTemp, aid)
 	videoAid := model.NewVideoAidInfo(aid, fmt.Sprintf("%d", aid))
 	reqParseFunction := GenGetAidChildrenParseFun(videoAid)
 	req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)

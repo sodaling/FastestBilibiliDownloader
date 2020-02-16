@@ -14,9 +14,9 @@ import (
 	"github.com/go-cmd/cmd"
 )
 
-var videPageMap = make(map[int64]int64)
-var contactFileName = "contact.txt"
-var videoOutputName = "output.mp4"
+var _videoPageMap = make(map[int64]int64)
+var _contactFileName = "contact.txt"
+var _videoOutputName = "output.mp4"
 
 func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 	wgOutside.Add(1)
@@ -28,10 +28,10 @@ func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 
 			switch x := item.Payload.(type) {
 			case *model.VideoAidInfo:
-				videPageMap[x.Aid] = x.GetPage()
+				_videoPageMap[x.Aid] = x.GetPage()
 			case *model.VideoCidInfo:
-				videPageMap[x.ParAid.Aid] -= 1
-				if videPageMap[x.ParAid.Aid] == 0 {
+				_videoPageMap[x.ParAid.Aid] -= 1
+				if _videoPageMap[x.ParAid.Aid] == 0 {
 					wgInside.Add(1)
 					go mergeVideo(x, &wgInside)
 				}
@@ -48,8 +48,8 @@ func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 func mergeVideo(videoCiD *model.VideoCidInfo, wg *sync.WaitGroup) {
 	defer wg.Done()
 	aidDirPath := tool.GetAidFileDownloadDir(videoCiD.ParAid.Aid, videoCiD.ParAid.Title)
-	contactTxtPath := path.Join(aidDirPath, contactFileName)
-	videoOutputPath := path.Join(aidDirPath, videoOutputName)
+	contactTxtPath := path.Join(aidDirPath, _contactFileName)
+	videoOutputPath := path.Join(aidDirPath, _videoOutputName)
 
 	err := createMergeInfoTxt(aidDirPath, videoCiD.ParAid.GetPage())
 	if err != nil {
@@ -65,7 +65,7 @@ func mergeVideo(videoCiD *model.VideoCidInfo, wg *sync.WaitGroup) {
 
 func createMergeInfoTxt(aidPath string, aidPage int64) error {
 	videoCidPathTemp := "file '" + path.Join(aidPath, "%d.flv") + "'\n"
-	txtPath := path.Join(aidPath, contactFileName)
+	txtPath := path.Join(aidPath, _contactFileName)
 
 	file, err := os.Create(txtPath)
 	if err != nil {
