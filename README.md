@@ -1,6 +1,8 @@
 # FastestBibiliDownloader
 
-Bilibili.com（B站）视频下载器。目前提供两个视频下载方案:
+**东半球第二快的Bilibili.com（B站）视频下载器！**
+
+目前提供两个视频下载方案:
 
 1. 通过视频的aid,下载单个视频.
 2. 通过up主的upid(b站叫mid),下载这个up主所投稿的所有视频.
@@ -15,7 +17,7 @@ Bilibili.com（B站）视频下载器。目前提供两个视频下载方案:
 >
 > 简单来说,特点就是:
 >
-> **快!贼快!**
+> **快!贼快!下载的视频越多越快！**
 >
 > * 当单个aid视频分了若干个part时候,或者当你选了下载up主下所有视频时候.多个视频将会同时并行下载,跑满你的网速绝对不是问题.
 > * 下载与合并视频并行处理.如果视频分了多个part,下载完成的同时就会立即合并.该视频合并处理和其他与其他下载和合并同时进行且互不影响.
@@ -47,5 +49,8 @@ Please enter your id #输入id
 
 ## 感谢
 
-1. [bilibili-downloader](https://github.com/stevenjoezhang/bilibili-downloader)：b站请求视频的API等等都是从这位的代码获得，本身的py代码注释也非常清晰，非常感谢。
-2. engine部分的框架参考**ccmouse**的思路，后面自己调整了整体架构部分。
+1. engine部分的框架参考**ccmouse**的思路，后面自己调整了整体架构部分，非常感谢。
+2. [bilibili-downloader](https://github.com/stevenjoezhang/bilibili-downloader)：b站请求视频的API等等都是从这位的代码获得，本身的py代码注释也非常清晰，非常感谢。
+3. 我亲爱的娜娜姐～
+
+>欢迎各位提pr或者fork或者什么都行，疫情无聊在家磨时间的产物，粗糙了一点，欢迎各位完善～
