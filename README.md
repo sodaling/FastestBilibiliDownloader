@@ -1,6 +1,10 @@
 # FastestBibiliDownloader
 
+#### 项目地址：**[ FastestBilibiliDownloader](https://github.com/sodaling/FastestBilibiliDownloader)**
+
 **东半球第二快的Bilibili.com（B站）视频下载器！**
+
+如果我想下载b站某个up主的所有视频，而且要飞快的那种，那么你可以试试这个项目-.-
 
 目前提供两个视频下载方案:
 
@@ -45,7 +49,7 @@ Please enter your id #输入id
 
    
 
-3. 后续有空会打包bin文件上来。
+3. 后续有空会打包bin文件到release的。
 
 ## 感谢
 
@@ -53,4 +57,5 @@ Please enter your id #输入id
 2. [bilibili-downloader](https://github.com/stevenjoezhang/bilibili-downloader)：b站请求视频的API等等都是从这位的代码获得，本身的py代码注释也非常清晰，非常感谢。
 3. 我亲爱的娜娜姐～
 
->欢迎各位提pr或者fork或者什么都行，疫情无聊在家磨时间的产物，粗糙了一点，欢迎各位完善～
+>欢迎各位提pr或者fork或者什么都行，能帮助到你的话欢迎star！疫情无聊在家磨时间的产物，粗糙了一点，欢迎各位完善～
+
