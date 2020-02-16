@@ -5,6 +5,8 @@ import (
 	"sync"
 )
 
+var _urlVisited = make(map[string]struct{})
+
 type ConcurrentEngine struct {
 	WorkerCount int
 	Scheduler   Scheduler
@@ -73,13 +75,11 @@ func (c *ConcurrentEngine) Run(seed ...*Request) {
 	close(c.ItemChan)
 }
 
-var urlVisited = make(map[string]struct{})
-
 func hasVisited(url string) bool {
-	if _, ok := urlVisited[url]; ok {
+	if _, ok := _urlVisited[url]; ok {
 		return true
 	} else {
-		urlVisited[url] = struct{}{}
+		_urlVisited[url] = struct{}{}
 	}
 	return false
 
