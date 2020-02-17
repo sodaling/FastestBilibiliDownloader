@@ -37,11 +37,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err != nil {
-		log.Fatalln(err)
-		os.Exit(1)
-	}
-
 	queueScheduler := scheduler.NewConcurrentScheduler()
 	conEngine := engine.NewConcurrentEngine(10, queueScheduler, itemChan)
 	log.Println("Start working.")
