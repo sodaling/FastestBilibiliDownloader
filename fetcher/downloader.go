@@ -13,7 +13,7 @@ import (
 
 var _startUrlTem = "https://api.bilibili.com/x/web-interface/view?aid=%d"
 
-func GenVideoFetcher(videoCid *model.VideoCidInfo) FetchFun {
+func GenVideoFetcher(videoCid *model.VideoCid) FetchFun {
 	referer := fmt.Sprintf(_startUrlTem, videoCid.ParAid.Aid)
 	for i := int64(1); i <= videoCid.Page; i++ {
 		referer += fmt.Sprintf("/?p=%d", i)

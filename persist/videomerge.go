@@ -26,9 +26,9 @@ func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 		for item := range out {
 
 			switch x := item.Payload.(type) {
-			case *model.VideoAidInfo:
+			case *model.VideoAid:
 				_videoPageMap[x.Aid] = x.GetPage()
-			case *model.VideoCidInfo:
+			case *model.VideoCid:
 				_videoPageMap[x.ParAid.Aid] -= 1
 				if _videoPageMap[x.ParAid.Aid] == 0 {
 					wgInside.Add(1)
@@ -44,7 +44,7 @@ func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 	return out, nil
 }
 
-func mergeVideo(videoCiD *model.VideoCidInfo, wg *sync.WaitGroup) {
+func mergeVideo(videoCiD *model.VideoCid, wg *sync.WaitGroup) {
 	defer wg.Done()
 	aidDirPath := tool.GetAidFileDownloadDir(videoCiD.ParAid.Aid, videoCiD.ParAid.Title)
 	contactTxtPath := path.Join(aidDirPath, _contactFileName)

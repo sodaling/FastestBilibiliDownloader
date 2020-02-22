@@ -17,7 +17,7 @@ var _paramsTemp = "appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type="
 var _playApiTemp = "https://interface.bilibili.com/v2/playurl?%s&sign=%s"
 var _quality = "80"
 
-func GenGetAidChildrenParseFun(videoAid *model.VideoAidInfo) engine.ParseFunc {
+func GenGetAidChildrenParseFun(videoAid *model.VideoAid) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 		var retParseResult engine.ParseResult
 		data := gjson.GetBytes(contents, "data").Array()

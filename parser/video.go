@@ -8,12 +8,12 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func GenVideoDownloadParseFun(videoCid *model.VideoCidInfo) engine.ParseFunc {
+func GenVideoDownloadParseFun(videoCid *model.VideoCid) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 		retParseResult := engine.ParseResult{}
 
-		durlArray := gjson.GetBytes(contents, "durl").Array()
-		for _, i := range durlArray {
+		durlSlice := gjson.GetBytes(contents, "durl").Array()
+		for _, i := range durlSlice {
 			videoUrl := i.Get("url").String()
 			req := engine.NewRequest(videoUrl, recordCidParseFun(videoCid), fetcher.GenVideoFetcher(videoCid))
 			retParseResult.Requests = append(retParseResult.Requests, req)
@@ -22,7 +22,7 @@ func GenVideoDownloadParseFun(videoCid *model.VideoCidInfo) engine.ParseFunc {
 	}
 }
 
-func recordCidParseFun(cidVideo *model.VideoCidInfo) engine.ParseFunc {
+func recordCidParseFun(cidVideo *model.VideoCid) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 		var retResult engine.ParseResult
 
