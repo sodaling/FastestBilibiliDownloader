@@ -19,7 +19,6 @@ var _contactFileName = "contact.txt"
 var _videoOutputName = "output.mp4"
 
 func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
-	wgOutside.Add(1)
 	out := make(chan *engine.Item)
 	go func() {
 		defer wgOutside.Done()

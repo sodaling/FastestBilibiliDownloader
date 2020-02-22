@@ -15,6 +15,7 @@ func main() {
 	itemProcessFun := persist.GetItemProcessFun()
 	var err error
 	var wg sync.WaitGroup
+	wg.Add(1)
 	itemChan, err := itemProcessFun(&wg)
 	if err != nil {
 		panic(err)
