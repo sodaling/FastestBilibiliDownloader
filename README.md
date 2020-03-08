@@ -56,6 +56,7 @@ Please enter your id #输入id
 1. engine部分的框架参考**ccmouse**的思路，后面自己调整了整体架构部分，非常感谢。
 2. [bilibili-downloader](https://github.com/stevenjoezhang/bilibili-downloader)：b站请求视频的API等等都是从这位的代码获得，本身的py代码注释也非常清晰，非常感谢。
 3. 我亲爱的娜娜姐～
+4. @sshwy帮忙抓虫纠错
 
 >欢迎各位提pr或者fork或者什么都行，能帮助到你的话欢迎star！疫情无聊在家磨时间的产物，粗糙了一点，欢迎各位完善～
 
