@@ -6,5 +6,5 @@ build: ## Build the container
 build-nc: ## Build the container without caching
 	docker build --no-cache -t $(APP_NAME) .
 run:
-	docker run -it  -v ${CURDIR}/download:/download crawler
+	docker run -it  -v ${CURDIR}/download:/download $(APP_NAME)
 
