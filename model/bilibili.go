@@ -40,9 +40,15 @@ func NewVideoAidInfo(aid int64, title string) *VideoAid {
 }
 
 type VideoCid struct {
-	Cid    int64
-	ParAid *VideoAid
-	Page   int64
+	Cid      int64
+	ParAid   *VideoAid
+	Page     int64
+	AllOrder int64
+}
+
+type Video struct {
+	Order  int64
+	ParCid *VideoCid
 }
 
 func NewVideoCidInfo(cid int64, parAid *VideoAid, page int64) *VideoCid {

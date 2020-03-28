@@ -39,7 +39,7 @@ func main() {
 	}
 
 	queueScheduler := scheduler.NewConcurrentScheduler()
-	conEngine := engine.NewConcurrentEngine(10, queueScheduler, itemChan)
+	conEngine := engine.NewConcurrentEngine(30, queueScheduler, itemChan)
 	log.Println("Start working.")
 	conEngine.Run(req)
 	wg.Wait()
