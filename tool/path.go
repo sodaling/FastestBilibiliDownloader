@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 )
 
 func GetAidFileDownloadDir(aid int64, title string) string {
@@ -12,7 +12,7 @@ func GetAidFileDownloadDir(aid int64, title string) string {
 	if err != nil {
 		panic(err)
 	}
-	fullDirPath := path.Join(curDir, "download", fmt.Sprintf("%d_%s", aid, title))
+	fullDirPath := filepath.Join(curDir, "download", fmt.Sprintf("%d_%s", aid, title))
 	err = os.MkdirAll(fullDirPath, 0777)
 	if err != nil {
 		panic(err)

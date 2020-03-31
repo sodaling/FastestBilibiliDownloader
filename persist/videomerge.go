@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"simple-golang-crawler/engine"
 	"simple-golang-crawler/model"
@@ -55,8 +54,8 @@ func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 func mergeVideo(video *model.Video, wg *sync.WaitGroup) {
 	defer wg.Done()
 	aidDirPath := tool.GetAidFileDownloadDir(video.ParCid.ParAid.Aid, video.ParCid.ParAid.Title)
-	contactTxtPath := path.Join(aidDirPath, _contactFileName)
-	videoOutputPath := path.Join(aidDirPath, _videoOutputName)
+	contactTxtPath := filepath.Join(aidDirPath, _contactFileName)
+	videoOutputPath := filepath.Join(aidDirPath, _videoOutputName)
 
 	// merge cid
 	for i := int64(1); i <= video.ParCid.ParAid.GetPage(); i++ {
@@ -67,7 +66,7 @@ func mergeVideo(video *model.Video, wg *sync.WaitGroup) {
 		}
 		log.Println(video.ParCid.ParAid.Title, " download completed.Start merging videos now.")
 		cidFilename := fmt.Sprintf("%d.flv", video.ParCid.Page)
-		cidOutput := path.Join(aidDirPath, cidFilename)
+		cidOutput := filepath.Join(aidDirPath, cidFilename)
 		command := []string{"ffmpeg", "-f", "concat", "-safe", "0", "-i", contactTxtPath, "-c", "copy", cidOutput}
 		findCmd := cmd.NewCmd(command[0], command[1:]...)
 		<-findCmd.Start()
@@ -86,8 +85,8 @@ func mergeVideo(video *model.Video, wg *sync.WaitGroup) {
 }
 
 func createMergeAidInfoTxt(aidPath string, aidPage int64) error {
-	videoCidPathTemp := "file '" + path.Join(aidPath, "%d.flv") + "'\n"
-	txtPath := path.Join(aidPath, _contactFileName)
+	videoCidPathTemp := "file '" + filepath.Join(aidPath, "%d.flv") + "'\n"
+	txtPath := filepath.Join(aidPath, _contactFileName)
 
 	file, err := os.Create(txtPath)
 	if err != nil {
@@ -103,8 +102,8 @@ func createMergeAidInfoTxt(aidPath string, aidPage int64) error {
 }
 
 func createMergeCidInfoTxt(aidPath string, cidPage int64, cidAllOrder int64) error {
-	videoCidPathTemp := "file '" + path.Join(aidPath, "%d_%d.flv") + "'\n"
-	txtPath := path.Join(aidPath, _contactFileName)
+	videoCidPathTemp := "file '" + filepath.Join(aidPath, "%d_%d.flv") + "'\n"
+	txtPath := filepath.Join(aidPath, _contactFileName)
 
 	file, err := os.Create(txtPath)
 	if err != nil {

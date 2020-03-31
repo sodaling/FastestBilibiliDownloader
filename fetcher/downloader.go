@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
+	"path/filepath"
 	"simple-golang-crawler/model"
 	"simple-golang-crawler/tool"
 )
@@ -51,7 +51,7 @@ func GenVideoFetcher(video *model.Video) FetchFun {
 
 		aidPath := tool.GetAidFileDownloadDir(video.ParCid.ParAid.Aid, video.ParCid.ParAid.Title)
 		filename := fmt.Sprintf("%d_%d.flv", video.ParCid.Page, video.Order)
-		file, err := os.Create(path.Join(aidPath, filename))
+		file, err := os.Create(filepath.Join(aidPath, filename))
 		if err != nil {
 			log.Fatalln(err)
 			os.Exit(1)
