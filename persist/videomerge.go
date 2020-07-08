@@ -16,7 +16,7 @@ import (
 
 var _videoPageMap = make(map[int64]map[int64]int64)
 var _contactFileName = "contact.txt"
-var _videoOutputName = "output.mp4"
+var _videoOutputNameExt = ".mp4"
 
 func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 	out := make(chan *engine.Item)
@@ -53,9 +53,10 @@ func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 
 func mergeVideo(video *model.Video, wg *sync.WaitGroup) {
 	defer wg.Done()
+	var _videoOutputName = video.ParCid.ParAid.Title + _videoOutputNameExt
 	aidDirPath := tool.GetAidFileDownloadDir(video.ParCid.ParAid.Aid, video.ParCid.ParAid.Title)
 	contactTxtPath := filepath.Join(aidDirPath, _contactFileName)
-	videoOutputPath := filepath.Join(aidDirPath, _videoOutputName)
+	videoOutputPath := filepath.Join(tool.GetMp4Dir(), _videoOutputName)
 
 	// merge cid
 	for i := int64(1); i <= video.ParCid.ParAid.GetPage(); i++ {
