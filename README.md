@@ -37,9 +37,9 @@ Please enter your id #输入id
 
 
 
-1. 如果你有Golang环境的话，程序入口在**cmd/start-concurrent-engine.go**。自己build或者run就好。但是注意，合并视频需要ffmeg的支持。不然只会下载并不会自动合并。
+1. 如果你有Golang环境的话，程序入口在**cmd/start-concurrent-engine.go**。自己build或者run就好。但是注意，合并视频需要FFmpeg的支持。不然只会下载并不会自动合并。
 
-2. 如果你没有Golang编译环境，或者没有ffmeg环境。那么推荐用docker方式运行。已经写好了dockefile和makefile。你只需要：
+2. 如果你没有Golang编译环境，或者没有FFmpeg环境。那么推荐用docker方式运行。已经写好了dockefile和makefile。你只需要：
 
    ```shell
    $ cd FastestBilibiliDownloader
