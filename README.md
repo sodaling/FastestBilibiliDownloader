@@ -37,9 +37,34 @@ Please enter your id #输入id
 
 
 
-1. 如果你有Golang环境的话，程序入口在**cmd/start-concurrent-engine.go**。自己build或者run就好。但是注意，合并视频需要ffmeg的支持。不然只会下载并不会自动合并。
+### 使用Golang编译环境
+1. 安装Golang编译环境
+* Ubuntu
+```shell
+sudo apt install golang
+```
 
-2. 如果你没有Golang编译环境，或者没有ffmeg环境。那么推荐用docker方式运行。已经写好了dockefile和makefile。你只需要：
+1.1 如果你在中国大陆，那么你大概率可能或许maybe需要配置代理才能顺利进行下一步。
+```shell
+go env -w GO111MODULE=on #启用Go Moledules
+go env -w  GOPROXY=https://goproxy.io #使用官方代理
+```
+
+2. 一次性运行FastestBibiliDownloader
+程序入口在**cmd/start-concurrent-engine.go**，只需要
+```shell
+go run cmd/start-concurrent-engine.go
+```
+首次运行会花时间下一大堆东西，然后按提示操作即可。
+注意，合并视频需要FFmpeg的支持。不然只会下载并不会自动合并。FFmpeg的安装教程请咨询搜索引擎。
+
+3. 编译FastestBibiliDownloader
+```shell
+go build cmd/start-concurrent-engine.go
+```
+之后直接运行./start-concurrent-engine即可。
+
+### 如果你没有Golang编译环境，或者没有FFmeg环境。那么推荐用docker方式运行。已经写好了dockefile和makefile。你只需要：
 
    ```shell
    $ cd FastestBilibiliDownloader
@@ -49,7 +74,7 @@ Please enter your id #输入id
 
    
 
-3. 后续有空会打包bin文件到release的。
+### 后续有空会打包bin文件到release的。
 
 ## 感谢
 
