@@ -13,8 +13,6 @@ func GetAidFileDownloadDir(aid int64, title string) string {
 	if err != nil {
 		panic(err)
 	}
-	// remove special characters
-	//title = TitleEdit(title)
 
 	fullDirPath := filepath.Join(curDir, "download", fmt.Sprintf("%d_%s", aid, title))
 	err = os.MkdirAll(fullDirPath, 0777)
@@ -29,9 +27,6 @@ func GetMp4Dir(title string) string {
 	if err != nil {
 		panic(err)
 	}
-
-    // remove special characters
-	//title = TitleEdit(title)
 
 	fullDirPath := filepath.Join(curDir, "output", title)
 	err = os.MkdirAll(fullDirPath, 0777)

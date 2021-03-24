@@ -8,7 +8,6 @@ import (
 	"simple-golang-crawler/model"
 	"simple-golang-crawler/tool"
 	"strconv"
-    // "log"
 	"github.com/tidwall/gjson"
 )
 
@@ -60,7 +59,7 @@ func GenGetAidChildrenParseFun(videoAid *model.VideoAid) engine.ParseFunc {
 
 func GetRequestByAid(aid int64) *engine.Request {
 	reqUrl := fmt.Sprintf(_getCidUrlTemp, aid)
-	videoAid := model.NewVideoAidInfo(aid, fmt.Sprintf("%d", aid)) //需要获取aid的title name
+	videoAid := model.NewVideoAidInfo(aid, fmt.Sprintf("%d", aid))
 	reqParseFunction := GenGetAidChildrenParseFun(videoAid)
 	req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 	return req

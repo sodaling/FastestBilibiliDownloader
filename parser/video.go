@@ -10,7 +10,6 @@ import (
 )
 
 // 大视频所以分成了不同部分提交，但是最终显示的只有一个视频文件
-// called in parser/cid.go: GenGetAidChildrenParseFun
 func GenVideoDownloadParseFun(videoCid *model.VideoCid) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 		retParseResult := engine.ParseResult{}

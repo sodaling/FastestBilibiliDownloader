@@ -42,10 +42,8 @@ func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 				if _videoPageMap[x.ParCid.ParAid.Aid][x.ParCid.Page] == 0 {
 					delete(_videoPageMap[x.ParCid.ParAid.Aid], x.ParCid.Page)
 				}
-				//x_map[x.ParCid.Page] = append(x_map[x.ParCid.Page], x)
 
 				if len(_videoPageMap[x.ParCid.ParAid.Aid]) == 0 { //当整个列表是空的时执行，即当最后一个文件下载完
-					//fmt.Println("_x_map:  ", _x_map)
 					wgInside.Add(1)
 					go mergeVideo_mod(_x_map[x.ParCid.ParAid.Aid],&wgInside)
 				}
@@ -61,17 +59,14 @@ func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *engine.Item, error) {
 }
 
 func mergeVideo_mod(x_map map[int64]*model.VideoCid, wg *sync.WaitGroup) {
-//func mergeVideo_mod(video_array []*model.Video, wg *sync.WaitGroup) {
-
 	defer wg.Done()
-	videoTmpParCid := x_map[int64(1)]   //[0]  //从一个子视频中获取视频总名称和aid （assume: 子视频的cid不同但aid和标题是一致的）
+	videoTmpParCid := x_map[int64(1)]  //从一个子视频中获取视频总名称和aid （assume: 子视频的cid不同但aid和标题是一致的）
 
 	aidDirPath := tool.GetAidFileDownloadDir(videoTmpParCid.ParAid.Aid, videoTmpParCid.ParAid.Title)
 	contactCidTxtPath := filepath.Join(aidDirPath, _contactFile2Name)
     mp4DirPath := tool.GetMp4Dir(videoTmpParCid.ParAid.Title)
 
     log.Println(videoTmpParCid.ParAid.Title, " download completed. Start to merge videos now.")
-    // log.Println("len video_array, ", len(_x_map), ", page number, ", videoTmp.ParCid.ParAid.GetPage())
 	for i := int64(1); i <= videoTmpParCid.ParAid.GetPage(); i++ {
 	    videoParCid := x_map[i]
 

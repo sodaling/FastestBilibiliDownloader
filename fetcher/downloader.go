@@ -60,7 +60,6 @@ func GenVideoFetcher(video *model.Video) FetchFun {
 		defer file.Close()
 
 		log.Println(video.ParCid.ParAid.Title + ":" + filename + " is downloading.")
-        //fmt.Printf("type of file = %T, and resp = %T. \n", file, resp)
 		_, err = io.Copy(file, resp.Body)
 		if err != nil {
 			log.Printf("Failed to download video aid: %d, cid: %d, title: %s, part: %s",

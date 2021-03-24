@@ -6,9 +6,8 @@ import (
 	"simple-golang-crawler/fetcher"
 	"simple-golang-crawler/model"
 	"simple-golang-crawler/tool"
-    // "log"
 	"math"
-	"github.com/tidwall/gjson"      //get json -> 读取json串
+	"github.com/tidwall/gjson"
 )
 
 var _getAidUrlTemp = "https://api.bilibili.com/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
@@ -91,8 +90,6 @@ func Bv2av(x string) int64 {
     }
     r := 0
     for i:=0; i<6; i++ {
-        //idx := s[i]
-        //char := string(x[idx])
         r += tr[string(x[s[i]])] * int(math.Pow(float64(58), float64(i)))
     }
     return int64((r - add) ^ xor)

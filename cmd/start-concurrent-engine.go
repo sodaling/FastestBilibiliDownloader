@@ -16,10 +16,11 @@ import (
 func main() {
 
 	var arg_idType *string = flag.String("t", "", "id type (i.e. aid, bvid or upid)")
-	var arg_id *string = flag.String("v", "", "id (i.e. 243153529 or BV13e411W7JY)")
+	var arg_id *string = flag.String("v", "", "id (直接输入id不需要加双引号)")
 	var arg_worker *int = flag.Int("w", 30, "number of workers for this id, depends on the videos to download")
 	flag.Parse()
 	//flag.PrintDefaults()
+
 	// 如果没有输入任何值
 	if *arg_idType == "" {
 	    log.Fatalln("No argument entered, using -h to find what is required")
@@ -40,16 +41,15 @@ func main() {
 	var id string = *arg_id
 	var num_worker int = *arg_worker
 
-    // 如果input是bvid的话 加上一步转换，并跑aid的code
 	if idType == "aid" {
         int_id,_ := strconv.ParseInt(id, 10, 64)
-		req = parser.GetRequestByAid(int_id) // parser.cid.go
+		req = parser.GetRequestByAid(int_id)
 	} else if idType == "bvid" {
 	    aid := parser.Bv2av(id)
 	    req = parser.GetRequestByAid(aid)
 	} else if idType == "upid" {
 	    int_id,_ := strconv.ParseInt(id, 10, 64)
-		req = parser.GetRequestByUpId(int_id)  //parser.aid.go
+		req = parser.GetRequestByUpId(int_id)  
 	} else {
 		log.Fatalln("Wrong type you enter")
 		os.Exit(1)

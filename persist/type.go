@@ -9,7 +9,6 @@ import (
 
 type GetItemChan func(wg *sync.WaitGroup) (chan *engine.Item, error)
 
-// called from: cmd/start-concurrent-engine.go: itemProcessFun := persist.GetItemProcessFun()
 func GetItemProcessFun() GetItemChan {
 	var itemProcessFun GetItemChan
 	if !tool.CheckFfmegStatus() {
