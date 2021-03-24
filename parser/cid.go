@@ -8,9 +8,10 @@ import (
 	"simple-golang-crawler/model"
 	"simple-golang-crawler/tool"
 	"strconv"
-
+    // "log"
 	"github.com/tidwall/gjson"
 )
+
 
 var _entropy = "rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg"
 var _paramsTemp = "appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type="
@@ -19,21 +20,32 @@ var _quality = "80"
 
 func GenGetAidChildrenParseFun(videoAid *model.VideoAid) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
+
 		var retParseResult engine.ParseResult
-		data := gjson.GetBytes(contents, "data").Array()
+        if videoAid.Title == strconv.FormatInt(videoAid.Aid, 10) {  // call from aid-related, we need to get the title of the video
+            title := gjson.GetBytes(contents, "data.title").String()
+	        title = tool.TitleEdit(title)  // remove special characters
+            videoAid.Title = title
+        }
+		data := gjson.GetBytes(contents, "data.pages").Array()
+        fmt.Println("data",videoAid.Title)
 		appKey, sec := tool.GetAppKey(_entropy)
 
 		var videoTotalPage int64
 		for _, i := range data {
 			cid := i.Get("cid").Int()
 			page := i.Get("page").Int()
-			videoCid := model.NewVideoCidInfo(cid, videoAid, page)
+			part := i.Get("part").String()
+			part = tool.TitleEdit(part) //remove special characters
+			videoCid := model.NewVideoCidInfo(cid, videoAid, page, part)
 			videoTotalPage += 1
 			cidStr := strconv.FormatInt(videoCid.Cid, 10)
 
 			params := fmt.Sprintf(_paramsTemp, appKey, cidStr, _quality, _quality)
 			chksum := fmt.Sprintf("%x", md5.Sum([]byte(params+sec)))
+
 			urlApi := fmt.Sprintf(_playApiTemp, params, chksum)
+
 			req := engine.NewRequest(urlApi, GenVideoDownloadParseFun(videoCid), fetcher.DefaultFetcher)
 			retParseResult.Requests = append(retParseResult.Requests, req)
 		}
@@ -48,8 +60,9 @@ func GenGetAidChildrenParseFun(videoAid *model.VideoAid) engine.ParseFunc {
 
 func GetRequestByAid(aid int64) *engine.Request {
 	reqUrl := fmt.Sprintf(_getCidUrlTemp, aid)
-	videoAid := model.NewVideoAidInfo(aid, fmt.Sprintf("%d", aid))
+	videoAid := model.NewVideoAidInfo(aid, fmt.Sprintf("%d", aid)) //需要获取aid的title name
 	reqParseFunction := GenGetAidChildrenParseFun(videoAid)
 	req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 	return req
 }
+

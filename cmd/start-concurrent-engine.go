@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
 	"os"
 	"simple-golang-crawler/engine"
@@ -9,9 +9,23 @@ import (
 	"simple-golang-crawler/persist"
 	"simple-golang-crawler/scheduler"
 	"sync"
+	"flag"
+	"strconv"
 )
 
 func main() {
+
+	var arg_idType *string = flag.String("t", "", "id type (i.e. aid, bvid or upid)")
+	var arg_id *string = flag.String("v", "", "id (i.e. 243153529 or BV13e411W7JY)")
+	var arg_worker *int = flag.Int("w", 30, "number of workers for this id, depends on the videos to download")
+	flag.Parse()
+	//flag.PrintDefaults()
+	// 如果没有输入任何值
+	if *arg_idType == "" {
+	    log.Fatalln("No argument entered, using -h to find what is required")
+		os.Exit(1)
+	}
+
 	itemProcessFun := persist.GetItemProcessFun()
 	var err error
 	var wg sync.WaitGroup
@@ -21,25 +35,28 @@ func main() {
 		panic(err)
 	}
 
-	var idType string
-	var id int64
 	var req *engine.Request
-	fmt.Println("Please enter your id type(`aid` or `upid`)")
-	fmt.Scan(&idType)
-	fmt.Println("Please enter your id")
-	fmt.Scan(&id)
+	var idType string = *arg_idType
+	var id string = *arg_id
+	var num_worker int = *arg_worker
 
+    // 如果input是bvid的话 加上一步转换，并跑aid的code
 	if idType == "aid" {
-		req = parser.GetRequestByAid(id)
+        int_id,_ := strconv.ParseInt(id, 10, 64)
+		req = parser.GetRequestByAid(int_id) // parser.cid.go
+	} else if idType == "bvid" {
+	    aid := parser.Bv2av(id)
+	    req = parser.GetRequestByAid(aid)
 	} else if idType == "upid" {
-		req = parser.GetRequestByUpId(id)
+	    int_id,_ := strconv.ParseInt(id, 10, 64)
+		req = parser.GetRequestByUpId(int_id)  //parser.aid.go
 	} else {
 		log.Fatalln("Wrong type you enter")
 		os.Exit(1)
 	}
 
 	queueScheduler := scheduler.NewConcurrentScheduler()
-	conEngine := engine.NewConcurrentEngine(30, queueScheduler, itemChan)
+	conEngine := engine.NewConcurrentEngine(num_worker, queueScheduler, itemChan)
 	log.Println("Start working.")
 	conEngine.Run(req)
 	wg.Wait()
