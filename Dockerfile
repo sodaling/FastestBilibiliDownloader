@@ -8,6 +8,8 @@ ENV GOPROXY="https://goproxy.io" GO111MODULE=on
 RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /go/bin/simple-golang-crawler cmd/start-concurrent-engine.go
+
+
 FROM alpine:3.7
 RUN apk update \
         && apk upgrade \

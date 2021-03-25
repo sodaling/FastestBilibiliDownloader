@@ -1,16 +1,16 @@
 # FastestBibiliDownloader
 
-#### 项目地址：**[ FastestBilibiliDownloader](https://github.com/sodaling/FastestBilibiliDownloader)**
+#### 原项目地址：**[ FastestBilibiliDownloader](https://github.com/sodaling/FastestBilibiliDownloader)**
 
 **东半球第二快的Bilibili.com（B站）视频下载器！**
 
 如果你想下载b站某个up主的所有视频，而且要飞快的那种，那么你可以试试这个项目-.-
 
-目前提供两个视频下载方案:
+目前提供两个（三个）视频下载方案:
 
 1. 通过视频的aid,下载单个视频.
 2. 通过up主的upid(b站叫mid),下载这个up主所投稿的所有视频.
-
+3. 通过视频的BVid,下载单个视频. **(new)**
 
 
 > 特性:
@@ -28,11 +28,10 @@
 
 ## 运行
 
-下载的视频会存放在运行路径下的**download**文件夹下，每个视频（aid）一个文件夹。
-
+下载的临时视频会存放在运行路径下的**download**文件夹下，每个视频（aid）一个文件夹，以**aid_视频标题**为文件夹名称。
+最终的视频会存放在运行路径下的**output**文件夹下，每个aid一个文件夹，以**视频标题**为文件夹名称。
 ```shell
-Please enter your id type(`aid` or `upid`) #aid是视频id，upid是up主id，可以在up主主页地址栏获得。
-Please enter your id #输入id
+go run cmd/start-concurrent-engine.go -h   # 获得参数
 ```
 
 
@@ -53,14 +52,14 @@ go env -w  GOPROXY=https://goproxy.io #使用官方代理
 2. 一次性运行FastestBibiliDownloader
 程序入口在**cmd/start-concurrent-engine.go**，只需要
 ```shell
-go run cmd/start-concurrent-engine.go
+go run cmd/start-concurrent-engine.go -t (aid/bvid/upid) -v (id)
 ```
 首次运行会花时间下一大堆东西，然后按提示操作即可。
 注意，合并视频需要FFmpeg的支持。不然只会下载并不会自动合并。FFmpeg的安装教程请咨询搜索引擎。
 
 3. 编译FastestBibiliDownloader
 ```shell
-go build cmd/start-concurrent-engine.go
+go build cmd/start-concurrent-engine.go -t (aid/bvid/upid) -v (id)
 ```
 之后直接运行./start-concurrent-engine即可。
 

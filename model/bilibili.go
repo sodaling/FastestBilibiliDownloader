@@ -43,6 +43,7 @@ type VideoCid struct {
 	Cid      int64
 	ParAid   *VideoAid
 	Page     int64
+	Part     string
 	AllOrder int64
 }
 
@@ -51,6 +52,6 @@ type Video struct {
 	ParCid *VideoCid
 }
 
-func NewVideoCidInfo(cid int64, parAid *VideoAid, page int64) *VideoCid {
-	return &VideoCid{Cid: cid, ParAid: parAid, Page: page}
+func NewVideoCidInfo(cid int64, parAid *VideoAid, page int64, part string) *VideoCid {
+	return &VideoCid{Cid: cid, ParAid: parAid, Page: page, Part: part}
 }
