@@ -47,6 +47,9 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.R
 	pn := pageInfo.Get("pn").Int()
 	ps := pageInfo.Get("ps").Int()
 	var extraPage int64
+	if ps == 0 {
+		ps = 1
+	}
 	if count%ps > 0 {
 		extraPage = 1
 	}
