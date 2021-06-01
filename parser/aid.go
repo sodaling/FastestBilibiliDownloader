@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+
 	"simple-golang-crawler/engine"
 	"simple-golang-crawler/fetcher"
 	"simple-golang-crawler/model"
@@ -46,6 +47,9 @@ func getNewBilibiliUpSpaceReqList(pageInfo gjson.Result, upid int64) []*engine.R
 	count := pageInfo.Get("count").Int()
 	pn := pageInfo.Get("pn").Int()
 	ps := pageInfo.Get("ps").Int()
+	if ps == 0 {
+		ps = 1
+	}
 	var extraPage int64
 	if count%ps > 0 {
 		extraPage = 1
