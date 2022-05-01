@@ -1,32 +1,19 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"simple-golang-crawler/engine"
 	"simple-golang-crawler/parser"
 	"simple-golang-crawler/persist"
 	"simple-golang-crawler/scheduler"
-	"sync"
-	"flag"
 	"strconv"
+	"sync"
 )
 
 func main() {
-
-	var arg_idType *string = flag.String("t", "", "id type (i.e. aid, bvid or upid)")
-	var arg_id *string = flag.String("v", "", "id (直接输入id不需要加双引号)")
-	var arg_worker *int = flag.Int("w", 30, "number of workers for this id, depends on the videos to download")
-	flag.Parse()
-	//flag.PrintDefaults()
-
-	// 如果没有输入任何值
-	if *arg_idType == "" {
-	    log.Fatalln("No argument entered, using -h to find what is required")
-		os.Exit(1)
-	}
-
 	itemProcessFun := persist.GetItemProcessFun()
 	var err error
 	var wg sync.WaitGroup
@@ -36,27 +23,59 @@ func main() {
 		panic(err)
 	}
 
+	var urlInput string
+
+	var idType = "else"
+	var aid int64
+	var upid int64
+	var bvid string
+
+	var params []string
+
 	var req *engine.Request
-	var idType string = *arg_idType
-	var id string = *arg_id
-	var num_worker int = *arg_worker
+
+	fmt.Println("请输入想要下载的视频网址/up主个人主页网址:")
+	fmt.Scan(&urlInput)
+
+	// bvid
+	bvidRegexp := regexp.MustCompile(`/?(BV\w+)[/?]?`)
+	params = bvidRegexp.FindStringSubmatch(urlInput)
+	if params != nil {
+		idType = "bvid"
+		bvid = params[1]
+	}
+
+	// aid
+	aidRegexp := regexp.MustCompile(`/?(av\d+)/?`)
+	params = aidRegexp.FindStringSubmatch(urlInput)
+	if params != nil {
+		idType = "aid"
+		aid, _ = strconv.ParseInt(params[1], 10, 64)
+	}
+
+	// upid
+	upidRegexp := regexp.MustCompile(`space.bilibili.com/(\d+)/?`)
+	params = upidRegexp.FindStringSubmatch(urlInput)
+	if params != nil {
+		idType = "upid"
+		upid, _ = strconv.ParseInt(params[1], 10, 64)
+	}
 
 	if idType == "aid" {
-        int_id,_ := strconv.ParseInt(id, 10, 64)
-		req = parser.GetRequestByAid(int_id)
+		req = parser.GetRequestByAid(aid)
 	} else if idType == "bvid" {
-	    aid := parser.Bv2av(id)
-	    req = parser.GetRequestByAid(aid)
+		aid = parser.Bv2av(bvid)
+		req = parser.GetRequestByAid(aid)
 	} else if idType == "upid" {
-	    int_id,_ := strconv.ParseInt(id, 10, 64)
-		req = parser.GetRequestByUpId(int_id)  
+		req = parser.GetRequestByUpId(upid)
 	} else {
-		log.Fatalln("Wrong type you enter")
+		req = nil
+		log.Fatalln("您输入的网址无法解析，请查证后重试")
 		os.Exit(1)
 	}
 
 	queueScheduler := scheduler.NewConcurrentScheduler()
-	conEngine := engine.NewConcurrentEngine(num_worker, queueScheduler, itemChan)
+	conEngine := engine.NewConcurrentEngine(30, queueScheduler, itemChan)
 	log.Println("Start working.")
 	conEngine.Run(req)
 	wg.Wait()
