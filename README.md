@@ -4,7 +4,7 @@
 
 > 项目仅用于学习交流，请勿用于任何商业用途！
 
-## 😎新增
+## ⭐新增
 
 自动解析 **想要下载的视频网址 / UP主个人主页网址**，支持：
 
@@ -13,6 +13,12 @@
 - [x] [https://space.bilibili.com/**UP主的ID**/](#)，UP主的ID是**一串数字**
 
 ![demo.png](demo.png)
+
+## ⚠较原项目的删减
+
++ 由于FFmeg拼接、转化耗时太长，故移除了 `video merge`中的功能 。下载后的视频为`.flv`格式。
+
+-----
 
 ## 👍原项目说明
 
@@ -40,7 +46,7 @@
 > * 当单个aid视频分了若干个part时候,或者当你选了下载up主下所有视频时候.多个视频将会同时并行下载,跑满你的网速绝对不是问题.
 > * 下载与合并视频并行处理.如果视频分了多个part,下载完成的同时就会立即合并.该视频合并处理和其他与其他下载和合并同时进行且互不影响.
 
-## 运行
+### 运行
 
 下载的临时视频会存放在运行路径下的**download**文件夹下，每个视频（aid）一个文件夹，以**aid_视频标题**为文件夹名称。
 最终的视频会存放在运行路径下的**output**文件夹下，每个aid一个文件夹，以**视频标题**为文件夹名称。
@@ -50,7 +56,8 @@ go run cmd/start-concurrent-engine.go -h   # 获得参数
 
 
 
-### 使用Golang编译环境
+#### 使用Golang编译环境
+
 1. 安装Golang编译环境
 * Ubuntu
 ```shell
@@ -77,7 +84,7 @@ go build cmd/start-concurrent-engine.go -t (aid/bvid/upid) -v (id)
 ```
 之后直接运行./start-concurrent-engine即可。
 
-### 如果你没有Golang编译环境，或者没有FFmeg环境。那么推荐用docker方式运行。已经写好了dockefile和makefile。你只需要：
+#### 如果你没有Golang编译环境，或者没有FFmeg环境。那么推荐用docker方式运行。已经写好了dockefile和makefile。你只需要：
 
    ```shell
    $ cd FastestBilibiliDownloader
@@ -87,9 +94,9 @@ go build cmd/start-concurrent-engine.go -t (aid/bvid/upid) -v (id)
 
    
 
-### 后续有空会打包bin文件到release的。
+#### 后续有空会打包bin文件到release的。
 
-## 感谢
+### 感谢
 
 1. engine部分的框架参考**ccmouse**的思路，后面自己调整了整体架构部分，非常感谢。
 2. [bilibili-downloader](https://github.com/stevenjoezhang/bilibili-downloader)：b站请求视频的API等等都是从这位的代码获得，本身的py代码注释也非常清晰，非常感谢。
