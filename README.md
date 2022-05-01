@@ -1,6 +1,20 @@
 # FastestBibiliDownloader
 
-#### 原项目地址：**[ FastestBilibiliDownloader](https://github.com/sodaling/FastestBilibiliDownloader)**
+## 原项目地址：**[ FastestBilibiliDownloader](https://github.com/sodaling/FastestBilibiliDownloader)**
+
+> 项目仅用于学习交流，请勿用于任何商业用途！
+
+## 😎新增
+
+自动解析 **想要下载的视频网址 / UP主个人主页网址**，支持：
+
+- [x] [https://www.bilibili.com/video/**旧版的av号**/](#)，av号是以`av`开头的**一串数字**
+- [x] [https://www.bilibili.com/video/**新版的BV号**/](#)，BV号是以`BV`开头的**一串字符**
+- [x] [https://space.bilibili.com/**UP主的ID**/](#)，UP主的ID是**一串数字**
+
+![demo.png](demo.png)
+
+## 👍原项目说明
 
 **东半球第二快的Bilibili.com（B站）视频下载器！**
 

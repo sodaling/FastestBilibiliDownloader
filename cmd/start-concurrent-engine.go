@@ -34,7 +34,14 @@ func main() {
 
 	var req *engine.Request
 
-	fmt.Println("请输入想要下载的视频网址/up主个人主页网址:")
+	fmt.Println("欢迎使用B站视频下载器 v2022-05-01")
+	fmt.Println("项目地址：  https://github.com/laorange/FastestBilibiliDownloader")
+	fmt.Println("原项目地址：https://github.com/sodaling/FastestBilibiliDownloader")
+	fmt.Println("\n\n支持以下几种格式的输入：")
+	fmt.Println("·  https://www.bilibili.com/video/旧版的av号/ | av号 是以`av`开头的一串数字")
+	fmt.Println("·  https://www.bilibili.com/video/新版的BV号/ | BV号 是以`BV`开头的一串字符")
+	fmt.Println("·  https://space.bilibili.com/UP主的ID/       | UP主的ID 是一串数字")
+	fmt.Print("\n\n请输入想要下载的视频网址/up主个人主页网址: ")
 	fmt.Scan(&urlInput)
 
 	// bvid
