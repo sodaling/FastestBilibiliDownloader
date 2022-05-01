@@ -34,7 +34,7 @@ func main() {
 
 	var req *engine.Request
 
-	fmt.Println("欢迎使用B站视频下载器 v2022-05-01")
+	fmt.Println("欢迎使用B站视频下载器 v1.0.1")
 	fmt.Println("项目地址：  https://github.com/laorange/FastestBilibiliDownloader")
 	fmt.Println("原项目地址：https://github.com/sodaling/FastestBilibiliDownloader")
 	fmt.Println("\n\n支持以下几种格式的输入：")
@@ -83,8 +83,10 @@ func main() {
 
 	queueScheduler := scheduler.NewConcurrentScheduler()
 	conEngine := engine.NewConcurrentEngine(30, queueScheduler, itemChan)
-	log.Println("Start working.")
+	log.Println("开始下载...")
 	conEngine.Run(req)
 	wg.Wait()
-	log.Println("All work has done")
+	log.Print("所有视频均已下载完成。按 Ctrl+C 来退出程序。")
+	var eof string
+	fmt.Scan(&eof)
 }

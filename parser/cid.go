@@ -3,14 +3,13 @@ package parser
 import (
 	"crypto/md5"
 	"fmt"
+	"github.com/tidwall/gjson"
 	"simple-golang-crawler/engine"
 	"simple-golang-crawler/fetcher"
 	"simple-golang-crawler/model"
 	"simple-golang-crawler/tool"
 	"strconv"
-	"github.com/tidwall/gjson"
 )
-
 
 var _entropy = "rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg"
 var _paramsTemp = "appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type="
@@ -21,13 +20,13 @@ func GenGetAidChildrenParseFun(videoAid *model.VideoAid) engine.ParseFunc {
 	return func(contents []byte, url string) engine.ParseResult {
 
 		var retParseResult engine.ParseResult
-        if videoAid.Title == strconv.FormatInt(videoAid.Aid, 10) {  // call from aid-related, we need to get the title of the video
-            title := gjson.GetBytes(contents, "data.title").String()
-	        title = tool.TitleEdit(title)  // remove special characters
-            videoAid.Title = title
-        }
+		if videoAid.Title == strconv.FormatInt(videoAid.Aid, 10) { // call from aid-related, we need to get the title of the video
+			title := gjson.GetBytes(contents, "data.title").String()
+			title = tool.TitleEdit(title) // remove special characters
+			videoAid.Title = title
+		}
 		data := gjson.GetBytes(contents, "data.pages").Array()
-        fmt.Println("data",videoAid.Title)
+		fmt.Println("即将开始下载：", videoAid.Title)
 		appKey, sec := tool.GetAppKey(_entropy)
 
 		var videoTotalPage int64
@@ -64,4 +63,3 @@ func GetRequestByAid(aid int64) *engine.Request {
 	req := engine.NewRequest(reqUrl, reqParseFunction, fetcher.DefaultFetcher)
 	return req
 }
-

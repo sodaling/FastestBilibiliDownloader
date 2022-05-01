@@ -40,13 +40,13 @@ func GenVideoFetcher(video *model.Video) FetchFun {
 
 		resp, err := client.Do(request)
 		if err != nil {
-			log.Fatalf("Fail to download the video %d, err is %s", video.ParCid.Cid, err)
+			log.Fatalf("下载 %d 时出错, 错误信息：%s", video.ParCid.Cid, err)
 			return nil, err
 		}
 
 		if resp.StatusCode != http.StatusPartialContent {
-			log.Fatalf("Fail to download the video %d, status code is %d", video.ParCid.Cid, resp.StatusCode)
-			return nil, fmt.Errorf("wrong status code: %d", resp.StatusCode)
+			log.Fatalf("下载 %d 时出错, 错误码：%d", video.ParCid.Cid, resp.StatusCode)
+			return nil, fmt.Errorf("错误码： %d", resp.StatusCode)
 		}
 		defer resp.Body.Close()
 
@@ -59,18 +59,18 @@ func GenVideoFetcher(video *model.Video) FetchFun {
 		}
 		defer file.Close()
 
-		log.Println(video.ParCid.ParAid.Title + ":" + filename + " is downloading.")
+		log.Println("正在下载：" + video.ParCid.ParAid.Title + "\\" + filename)
 		_, err = io.Copy(file, resp.Body)
 		if err != nil {
-			log.Printf("Failed to download video aid: %d, cid: %d, title: %s, part: %s",
-			video.ParCid.ParAid.Aid, video.ParCid.Cid, video.ParCid.ParAid.Title, video.ParCid.Part)
-			log.Println("The error message is: ", err)
+			log.Printf("下载失败 aid: %d, cid: %d, title: %s, part: %s",
+				video.ParCid.ParAid.Aid, video.ParCid.Cid, video.ParCid.ParAid.Title, video.ParCid.Part)
+			log.Println("错误信息：", err)
 
 			// request again
-            go requestLater(file, resp, video)
+			go requestLater(file, resp, video)
 			return nil, err
 		}
-		log.Println(video.ParCid.ParAid.Title + ":" + filename + " has finished.")
+		log.Println("下载完成：" + video.ParCid.ParAid.Title + "\\" + filename)
 
 		return nil, nil
 	}
@@ -83,17 +83,15 @@ func genCheckRedirectfun(referer string) func(req *http.Request, via []*http.Req
 	}
 }
 
-func requestLater(file *os.File, resp *http.Response, video *model.Video) error{
+func requestLater(file *os.File, resp *http.Response, video *model.Video) error {
 
-    log.Println("Unable to open the file due to the remote host, request in 30 seconds.")
-    time.Sleep(time.Second*30)
+	log.Println("连接失败，30秒后重试 (Unable to open the file due to the remote host, request in 30 seconds)")
+	time.Sleep(time.Second * 30)
 
-    _, err := io.Copy(file, resp.Body)
-    if err != nil {
-        log.Printf("Failed to download video aid: %d, cid: %d, title: %s, part: %s again",
-        video.ParCid.ParAid.Aid, video.ParCid.Cid, video.ParCid.ParAid.Title, video.ParCid.Part)
-    }
-    return err
+	_, err := io.Copy(file, resp.Body)
+	if err != nil {
+		log.Printf("下载失败 aid: %d, cid: %d, title: %s, part: %s again",
+			video.ParCid.ParAid.Aid, video.ParCid.Cid, video.ParCid.ParAid.Title, video.ParCid.Part)
+	}
+	return err
 }
-
-
