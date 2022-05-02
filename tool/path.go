@@ -13,16 +13,7 @@ func GetAidFileDownloadDir(aid int64, title string) string {
 	if err != nil {
 		panic(err)
 	}
-	title = strings.Replace(title, ":" , "", -1)
-	title = strings.Replace(title, "\\",  "", -1)
-	title = strings.Replace(title, "/" , "", -1)
-	title = strings.Replace(title, "*" , "", -1)
-	title = strings.Replace(title, "?" , "", -1)
-	title = strings.Replace(title, "\"" , "", -1)
-	title = strings.Replace(title, "<" , "", -1)
-	title = strings.Replace(title, ">" , "", -1)
-	title = strings.Replace(title, "|" , "", -1)
-	// remove special symbal
+
 	fullDirPath := filepath.Join(curDir, "download", fmt.Sprintf("%d_%s", aid, title))
 	err = os.MkdirAll(fullDirPath, 0777)
 	if err != nil {
@@ -31,12 +22,13 @@ func GetAidFileDownloadDir(aid int64, title string) string {
 	return fullDirPath
 }
 
-func GetMp4Dir() string {
+func GetMp4Dir(title string) string {
 	curDir, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
-	fullDirPath := filepath.Join(curDir, "output")
+
+	fullDirPath := filepath.Join(curDir, "output", title)
 	err = os.MkdirAll(fullDirPath, 0777)
 	if err != nil {
 		panic(err)
@@ -56,4 +48,20 @@ func CheckFfmegStatus() bool {
 	} else {
 		return true
 	}
+}
+
+func TitleEdit(title string) string {  // will be used when save the title or the part
+    // remove special symbol
+	title = strings.Replace(title, ":" , "", -1)
+	title = strings.Replace(title, "\\",  "", -1)
+	title = strings.Replace(title, "/" , "", -1)
+	title = strings.Replace(title, "*" , "", -1)
+	title = strings.Replace(title, "?" , "", -1)
+	title = strings.Replace(title, "\"" , "", -1)
+	title = strings.Replace(title, "<" , "", -1)
+	title = strings.Replace(title, ">" , "", -1)
+	title = strings.Replace(title, "|" , "", -1)
+	title = strings.Replace(title, "." , "", -1)
+
+	return title
 }
